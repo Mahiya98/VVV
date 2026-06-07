@@ -89,10 +89,15 @@
   .assign-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 640px) { .assign-grid { grid-template-columns: 1fr; } }
   .panel-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
-  .panel-card-title { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px; }
+  .panel-card-title { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .scroll-box { max-height: 360px; overflow-y: auto; }
   .search-input { width: 100%; margin-bottom: 8px; }
   .role-filter { width: 100%; margin-bottom: 8px; }
+  /* NEW: active role chip shown above task panel */
+  .active-role-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; background: var(--purple-light); color: var(--purple); font-size: 11px; font-weight: 500; }
+  .active-role-chip .x { cursor: pointer; font-weight: 700; opacity: .7; padding: 0 2px; }
+  .active-role-chip .x:hover { opacity: 1; }
+  .role-link-banner { background: linear-gradient(135deg, var(--purple-light) 0%, #ddd0f0 100%); border: 1px solid #c9b6e8; border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 10px; font-size: 12px; color: var(--purple); display: flex; align-items: center; gap: 8px; }
   .emp-item { display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: var(--radius-sm); cursor: pointer; border: 1px solid transparent; transition: all .13s; }
   .emp-item:hover { background: var(--surface2); }
   .emp-item.sel { background: var(--blue-light); border-color: #a8c4ea; }
@@ -104,6 +109,7 @@
   .task-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px; border-radius: var(--radius-sm); cursor: pointer; border: 1px solid transparent; transition: all .13s; }
   .task-item:hover { background: var(--surface2); }
   .task-item.sel { background: var(--blue-light); border-color: #a8c4ea; }
+  .task-item .matched-role { background: var(--purple-light); color: var(--purple); font-weight: 600; padding: 0 3px; border-radius: 3px; }
   .chk { width: 16px; height: 16px; border: 1.5px solid var(--border2); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; font-size: 10px; transition: all .13s; }
   .chk.on { background: var(--blue); border-color: var(--blue); color: #fff; }
   .task-name-s { font-size: 12px; line-height: 1.4; font-weight: 500; }
@@ -401,9 +407,9 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ═════════════════════════════════
+/* ═══════════════════════════════════════════
    GOOGLE SHEET CONFIG
-═════════════════════════════════ */
+═══════════════════════════════════════════ */
 const SHEET_ID = '1QdeTUZNWQjnlNXLAe3DPHlisP1Wb8XOEyW5L5BLOJeM';
 const EMP_SHEET_GID = '305497321';
 const TASKS_SHEET_GID = '0';
@@ -413,10 +419,10 @@ const TASKS_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
 /* STATE */
 let EMPLOYEES = [];
 let empMap = {};
-let EMP_ROLE_LIST = [];        // <-- NEW: distinct list of employee roles for filter dropdown
+let EMP_ROLE_LIST = [];
 let TASKS = [];
 let taskMap = {};
-let ROLE_LIST = [];            // task-roles
+let ROLE_LIST = [];
 const SHIFT_TIMES = { A:{s:"06:00",e:"14:00"}, B:{s:"14:00",e:"22:00"}, C:{s:"22:00",e:"06:00"} };
 
 let assignments = JSON.parse(localStorage.getItem('sms_assignments') || '[]');
@@ -426,7 +432,7 @@ let selTasks = new Set();
 let activeRole = '';
 let empCompleted = new Set();
 let currentEmpSession = null;
-let empRoleFilter = '';        // <-- NEW: current filter value
+let empRoleFilter = ''; // shared across employee + task panels in manual method
 
 /* CSV PARSER */
 function parseCSV(text) {
@@ -448,14 +454,13 @@ function parseCSV(text) {
   return rows;
 }
 
-/* ═════════════════════════════════
-   LOAD EMPLOYEES — now includes Role (Column D)
-═════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   LOAD EMPLOYEES (with Role column)
+═══════════════════════════════════════════ */
 async function loadEmployeesFromSheet() {
   const status = document.getElementById('data-status-emp');
   status.className = 'data-status loading';
   status.innerHTML = '<div class="spinner"></div><span>Loading employees from sheet…</span>';
-
   try {
     const response = await fetch(EMP_CSV_URL, { cache: 'no-store' });
     if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -465,12 +470,11 @@ async function loadEmployeesFromSheet() {
 
     let headerIdx = rows.findIndex(r => r.some(c => /enroll/i.test(c) || /employee\s*name/i.test(c)));
     if (headerIdx === -1) headerIdx = 0;
-
     const header = rows[headerIdx].map(h => h.toLowerCase().trim());
     const colSection = header.findIndex(h => /section/i.test(h));
     const colEnroll  = header.findIndex(h => /enroll/i.test(h));
     const colName    = header.findIndex(h => /name/i.test(h));
-    const colRole    = header.findIndex(h => /^role$|role/i.test(h));   // <-- NEW: detect Role column
+    const colRole    = header.findIndex(h => /role/i.test(h));
 
     if (colEnroll === -1 || colName === -1) throw new Error('Missing Enroll/Name columns');
 
@@ -480,19 +484,15 @@ async function loadEmployeesFromSheet() {
       const id = parseInt(idStr.replace(/[^0-9]/g, ''));
       if (!id || !nameStr) return null;
       return {
-        id,
-        name: nameStr,
+        id, name: nameStr,
         section: colSection >= 0 ? (r[colSection] || '').toString().trim() : '',
-        role: colRole >= 0 ? (r[colRole] || '').toString().trim() : ''   // <-- NEW
+        role: colRole >= 0 ? (r[colRole] || '').toString().trim() : ''
       };
     }).filter(Boolean);
 
     if (!EMPLOYEES.length) throw new Error('No valid employees');
-
     empMap = {};
     EMPLOYEES.forEach(e => empMap[e.id] = e);
-
-    // Build distinct role list for filter dropdown
     EMP_ROLE_LIST = [...new Set(EMPLOYEES.map(e => e.role).filter(Boolean))].sort();
 
     status.className = 'data-status ok';
@@ -506,14 +506,13 @@ async function loadEmployeesFromSheet() {
   }
 }
 
-/* ═════════════════════════════════
-   LOAD TASKS — same as before
-═════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   LOAD TASKS (with Role column - can have multiple)
+═══════════════════════════════════════════ */
 async function loadTasksFromSheet() {
   const status = document.getElementById('data-status-tasks');
   status.className = 'data-status loading';
   status.innerHTML = '<div class="spinner"></div><span>Loading tasks from sheet…</span>';
-
   try {
     const response = await fetch(TASKS_CSV_URL, { cache: 'no-store' });
     if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -523,7 +522,6 @@ async function loadTasksFromSheet() {
 
     let headerIdx = rows.findIndex(r => r.some(c => /work\s*name/i.test(c) || /required\s*time/i.test(c)));
     if (headerIdx === -1) headerIdx = 0;
-
     const header = rows[headerIdx].map(h => h.toLowerCase().trim());
     let colSection = header.findIndex(h => /section/i.test(h));
     let colRole    = header.findIndex(h => /role/i.test(h));
@@ -537,7 +535,8 @@ async function loadTasksFromSheet() {
       const timeStr = colTime >= 0 ? (r[colTime] || '').toString().trim() : '0';
       const section = colSection >= 0 ? (r[colSection] || '').toString().trim() : '';
       if (!name) return null;
-      const roles = rolesStr ? rolesStr.split(/[,;/]/).map(s => s.trim()).filter(Boolean) : ['General'];
+      // Split on common separators - handles "Fitter, Helper" or "Fitter; Helper" or "Fitter / Helper"
+      const roles = rolesStr ? rolesStr.split(/[,;/|]/).map(s => s.trim()).filter(Boolean) : ['General'];
       const time = parseInt(timeStr.replace(/[^0-9]/g, '')) || 0;
       let prio = 'M';
       if (time > 180) prio = 'H';
@@ -608,7 +607,21 @@ function showToast(msg) {
 }
 function saveCompletions() { localStorage.setItem('sms_completions', JSON.stringify(completions)); }
 function saveAssignments() { localStorage.setItem('sms_assignments', JSON.stringify(assignments)); }
-function escapeHtml(s) { return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeHtml(s) { return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ═══════════════════════════════════════════
+   ROLE-MATCHING HELPER
+   Returns true if a task's roles match the given employee role.
+   Handles: case-insensitive, partial match, multiple roles per task
+═══════════════════════════════════════════ */
+function taskMatchesRole(task, role) {
+  if (!role) return true;
+  const r = role.toLowerCase().trim();
+  return task.roles.some(tr => {
+    const trl = tr.toLowerCase().trim();
+    return trl === r || trl.includes(r) || r.includes(trl);
+  });
+}
 
 /* INIT */
 document.getElementById('m-date').value = today();
@@ -618,9 +631,9 @@ document.getElementById('comp-date-filter').value = today();
 document.getElementById('mgr-date-label').textContent = new Date().toLocaleDateString('en-GB', {weekday:'long', day:'2-digit', month:'short', year:'numeric'});
 loadAllData();
 
-/* ═════════════════════════════════
+/* ═══════════════════════════════════════════
    MANAGER
-═════════════════════════════════ */
+═══════════════════════════════════════════ */
 function goManager() {
   if (!EMPLOYEES.length || !TASKS.length) { showToast('Sheets not loaded yet'); return; }
   show('sc-mgr-login');
@@ -652,27 +665,39 @@ function renderAssignUI() {
   const method = document.getElementById('m-method').value;
   const ui = document.getElementById('assign-ui');
   if (method === 'manual') {
-    // NEW: role filter dropdown ABOVE search box
     const roleOptions = ['<option value="">All roles</option>',
-      ...EMP_ROLE_LIST.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`)].join('');
+      ...EMP_ROLE_LIST.map(r => {
+        const matchCount = TASKS.filter(t => taskMatchesRole(t, r)).length;
+        return `<option value="${escapeHtml(r)}">${escapeHtml(r)} (${matchCount} task${matchCount!==1?'s':''})</option>`;
+      })].join('');
     ui.innerHTML = `<div class="assign-grid">
       <div class="panel-card">
-        <div class="panel-card-title">Select employee (${EMPLOYEES.length} from sheet)</div>
-        <select class="role-filter" onchange="empRoleFilter=this.value;renderEmpList(document.getElementById('emp-search').value)">
+        <div class="panel-card-title">
+          <span>Select employee (${EMPLOYEES.length} from sheet)</span>
+        </div>
+        <select class="role-filter" id="emp-role-filter" onchange="setRoleFilter(this.value)">
           ${roleOptions}
         </select>
         <input class="search-input" id="emp-search" placeholder="Search name, enroll, section, or role..." oninput="renderEmpList(this.value)">
         <div class="scroll-box" id="emp-sel-list"></div>
       </div>
       <div class="panel-card">
-        <div class="panel-card-title">Select tasks (${TASKS.length} from sheet)</div>
-        <input class="search-input" placeholder="Search task name or role..." oninput="renderTaskList(this.value)">
+        <div class="panel-card-title" id="task-panel-title">
+          <span>Select tasks (${TASKS.length} from sheet)</span>
+        </div>
+        <div id="task-role-banner"></div>
+        <input class="search-input" id="task-search" placeholder="Search task name or role..." oninput="renderTaskList(this.value)">
         <div class="scroll-box" id="task-sel-list"></div>
       </div>
     </div>`;
-    renderEmpList(''); renderTaskList('');
+    // Restore previous filter selection
+    if (empRoleFilter) {
+      document.getElementById('emp-role-filter').value = empRoleFilter;
+    }
+    renderEmpList('');
+    renderTaskList('');
+    updateTaskPanelHeader();
   } else if (method === 'role') {
-    // CHANGED: now uses EMPLOYEE roles from sheet
     const opts = EMP_ROLE_LIST.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
     ui.innerHTML = `<div class="assign-grid">
       <div class="panel-card">
@@ -682,13 +707,13 @@ function renderAssignUI() {
         <div class="scroll-box" id="role-emp-list"></div>
       </div>
       <div class="panel-card">
-        <div class="panel-card-title">Select tasks for this role</div>
-        <input class="search-input" placeholder="Search tasks..." oninput="renderTaskList(this.value)">
-        <div class="scroll-box" id="task-sel-list"></div>
+        <div class="panel-card-title" id="role-task-title">Tasks matching this role</div>
+        <input class="search-input" placeholder="Search tasks..." oninput="renderRoleTaskList(this.value)">
+        <div class="scroll-box" id="role-task-list"></div>
       </div>
     </div>`;
-    roleGroupChange(EMP_ROLE_LIST[0] || '');
-    renderTaskList('');
+    activeRole = EMP_ROLE_LIST[0] || '';
+    roleGroupChange(activeRole);
   } else {
     ui.innerHTML = `<div class="panel-card" style="max-width:500px">
       <div class="panel-card-title">Auto-assign settings</div>
@@ -700,9 +725,47 @@ function renderAssignUI() {
   }
 }
 
-/* ═════════════════════════════════
-   RENDER EMPLOYEE LIST — now shows role + supports role filter
-═════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   NEW: setRoleFilter — single source of truth
+   Filters BOTH employee panel AND task panel
+═══════════════════════════════════════════ */
+function setRoleFilter(role) {
+  empRoleFilter = role || '';
+  renderEmpList(document.getElementById('emp-search')?.value || '');
+  renderTaskList(document.getElementById('task-search')?.value || '');
+  updateTaskPanelHeader();
+}
+
+function clearRoleFilter() {
+  empRoleFilter = '';
+  const sel = document.getElementById('emp-role-filter');
+  if (sel) sel.value = '';
+  renderEmpList(document.getElementById('emp-search')?.value || '');
+  renderTaskList(document.getElementById('task-search')?.value || '');
+  updateTaskPanelHeader();
+}
+
+function updateTaskPanelHeader() {
+  const banner = document.getElementById('task-role-banner');
+  const title = document.getElementById('task-panel-title');
+  if (!banner || !title) return;
+  if (empRoleFilter) {
+    const matchCount = TASKS.filter(t => taskMatchesRole(t, empRoleFilter)).length;
+    banner.innerHTML = `<div class="role-link-banner">
+      🔗 <strong>Linked filter active:</strong> showing tasks where Role contains
+      <span class="active-role-chip">${escapeHtml(empRoleFilter)} <span class="x" onclick="clearRoleFilter()">✕</span></span>
+      <span style="margin-left:auto;font-size:11px;opacity:.85">${matchCount} match${matchCount!==1?'es':''}</span>
+    </div>`;
+    title.innerHTML = `<span>Select tasks (filtered by role)</span>`;
+  } else {
+    banner.innerHTML = '';
+    title.innerHTML = `<span>Select tasks (${TASKS.length} from sheet)</span>`;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RENDER EMPLOYEE LIST — filters by empRoleFilter
+═══════════════════════════════════════════ */
 function renderEmpList(q) {
   const el = document.getElementById('emp-sel-list'); if (!el) return;
   const ql = (q || '').toLowerCase();
@@ -721,37 +784,65 @@ function renderEmpList(q) {
         <div class="emp-name">${escapeHtml(e.name)}${e.role ? ` <span class="emp-role-badge">${escapeHtml(e.role)}</span>` : ''}</div>
         <div class="emp-id">${e.id}${e.section ? ' · ' + escapeHtml(e.section) : ''}</div>
       </div>
-    </div>`).join('') || '<div style="font-size:12px;color:var(--text3);padding:8px;">No matches</div>';
+    </div>`).join('') || '<div style="font-size:12px;color:var(--text3);padding:8px;text-align:center;">No matches</div>';
 }
 
+/* ═══════════════════════════════════════════
+   RENDER TASK LIST — NOW also filters by empRoleFilter
+   Highlights the matching role within the task's role list
+═══════════════════════════════════════════ */
 function renderTaskList(q) {
   const el = document.getElementById('task-sel-list'); if (!el) return;
   const ql = (q || '').toLowerCase();
-  const f = TASKS.filter(t => !q || t.name.toLowerCase().includes(ql) || t.roles.some(r => r.toLowerCase().includes(ql)) || (t.section||'').toLowerCase().includes(ql));
-  if (!f.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:8px;">No matches</div>'; return; }
+  const rf = (empRoleFilter || '').toLowerCase().trim();
+
+  const f = TASKS.filter(t => {
+    // Apply role filter (linked from employee panel)
+    if (empRoleFilter && !taskMatchesRole(t, empRoleFilter)) return false;
+    // Apply search query
+    if (!q) return true;
+    return t.name.toLowerCase().includes(ql)
+        || t.roles.some(r => r.toLowerCase().includes(ql))
+        || (t.section || '').toLowerCase().includes(ql);
+  });
+
+  if (!f.length) {
+    el.innerHTML = `<div style="font-size:12px;color:var(--text3);padding:8px;text-align:center;">
+      ${empRoleFilter ? `No tasks with role matching "${escapeHtml(empRoleFilter)}"` : 'No matches'}
+    </div>`;
+    return;
+  }
+
   el.innerHTML = f.map(t => {
     const pc = t.prio === 'H' ? 'b-h' : t.prio === 'M' ? 'b-m' : 'b-l';
     const pl = t.prio === 'H' ? 'High' : t.prio === 'M' ? 'Med' : 'Low';
-    const rolesShort = t.roles.slice(0, 2).join(', ') + (t.roles.length > 2 ? ` +${t.roles.length-2}` : '');
+    // Build roles display, highlighting the matched one
+    const rolesDisplay = t.roles.map(r => {
+      if (rf && (r.toLowerCase().includes(rf) || rf.includes(r.toLowerCase()))) {
+        return `<span class="matched-role">${escapeHtml(r)}</span>`;
+      }
+      return escapeHtml(r);
+    }).join(', ');
     return `<div class="task-item${selTasks.has(t.id) ? ' sel' : ''}" onclick="toggleTaskSel(${t.id})">
       <div class="chk${selTasks.has(t.id) ? ' on' : ''}">${selTasks.has(t.id) ? '&#10003;' : ''}</div>
       <div style="flex:1;min-width:0">
         <div class="task-name-s">${escapeHtml(t.name)}</div>
         <div class="task-meta-s">
           <span class="badge ${pc}" style="margin-right:4px">${pl}</span>
-          ${fmt(t.time)} &middot; ${escapeHtml(rolesShort || 'No role')}
+          ${fmt(t.time)} &middot; ${rolesDisplay || 'No role'}
         </div>
       </div>
     </div>`;
   }).join('');
 }
 
-/* ═════════════════════════════════
-   ROLE GROUP — now filters EMPLOYEES by role from sheet
-═════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   ROLE GROUP method (separate panel) - matches both sheets
+═══════════════════════════════════════════ */
 function roleGroupChange(role) {
   activeRole = role;
   const empEl = document.getElementById('role-emp-list');
+  const titleEl = document.getElementById('role-task-title');
   const safeRole = role.replace(/'/g,"\\'").replace(/"/g,'\\"');
   if (empEl) {
     const filteredEmps = EMPLOYEES.filter(e => e.role === role);
@@ -764,15 +855,55 @@ function roleGroupChange(role) {
         </div>
       </div>`).join('') : '<div style="font-size:12px;color:var(--text3);padding:8px;">No employees with this role</div>';
   }
+  if (titleEl) {
+    const matchCount = TASKS.filter(t => taskMatchesRole(t, role)).length;
+    titleEl.innerHTML = `Tasks matching "${escapeHtml(role)}" <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:11px;">(${matchCount} of ${TASKS.length})</span>`;
+  }
+  renderRoleTaskList('');
+}
+
+function renderRoleTaskList(q) {
+  const el = document.getElementById('role-task-list');
+  if (!el) return;
+  const ql = (q || '').toLowerCase();
+  const matchingTasks = TASKS.filter(t => {
+    if (!taskMatchesRole(t, activeRole)) return false;
+    if (!q) return true;
+    return t.name.toLowerCase().includes(ql) || (t.section||'').toLowerCase().includes(ql);
+  });
+  if (!matchingTasks.length) {
+    el.innerHTML = `<div style="font-size:12px;color:var(--text3);padding:8px;text-align:center;">No tasks for role "${escapeHtml(activeRole)}"</div>`;
+    return;
+  }
+  const rf = (activeRole || '').toLowerCase();
+  el.innerHTML = matchingTasks.map(t => {
+    const pc = t.prio === 'H' ? 'b-h' : t.prio === 'M' ? 'b-m' : 'b-l';
+    const pl = t.prio === 'H' ? 'High' : t.prio === 'M' ? 'Med' : 'Low';
+    const rolesDisplay = t.roles.map(r => {
+      if (rf && (r.toLowerCase().includes(rf) || rf.includes(r.toLowerCase()))) {
+        return `<span class="matched-role">${escapeHtml(r)}</span>`;
+      }
+      return escapeHtml(r);
+    }).join(', ');
+    return `<div class="task-item${selTasks.has(t.id) ? ' sel' : ''}" onclick="toggleTaskSel(${t.id});renderRoleTaskList(document.querySelector('#mp-assign .search-input')?.value || '')">
+      <div class="chk${selTasks.has(t.id) ? ' on' : ''}">${selTasks.has(t.id) ? '&#10003;' : ''}</div>
+      <div style="flex:1;min-width:0">
+        <div class="task-name-s">${escapeHtml(t.name)}</div>
+        <div class="task-meta-s"><span class="badge ${pc}" style="margin-right:4px">${pl}</span>${fmt(t.time)} &middot; ${rolesDisplay}</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function toggleEmp(id) {
   if (selEmps.has(id)) selEmps.delete(id); else selEmps.add(id);
-  // Re-render whichever list is visible
   if (document.getElementById('emp-sel-list')) renderEmpList(document.getElementById('emp-search')?.value || '');
   if (document.getElementById('role-emp-list')) roleGroupChange(activeRole);
 }
-function toggleTaskSel(id) { if (selTasks.has(id)) selTasks.delete(id); else selTasks.add(id); renderTaskList(''); }
+function toggleTaskSel(id) {
+  if (selTasks.has(id)) selTasks.delete(id); else selTasks.add(id);
+  if (document.getElementById('task-sel-list')) renderTaskList(document.getElementById('task-search')?.value || '');
+}
 
 function doAssign() {
   const err = document.getElementById('assign-err');
@@ -784,8 +915,7 @@ function doAssign() {
     const role = document.getElementById('auto-role').value;
     const empsInRole = EMPLOYEES.filter(e => e.role === role);
     if (!empsInRole.length) { err.textContent = `No employees with role "${role}".`; err.style.display = 'block'; return; }
-    // Match tasks where any task-role matches employee role (case-insensitive)
-    const matchingTasks = TASKS.filter(t => t.roles.some(r => r.toLowerCase().includes(role.toLowerCase()) || role.toLowerCase().includes(r.toLowerCase())));
+    const matchingTasks = TASKS.filter(t => taskMatchesRole(t, role));
     if (!matchingTasks.length) { err.textContent = 'No tasks match this employee role.'; err.style.display = 'block'; return; }
     let count = 0;
     empsInRole.forEach(emp => {
@@ -919,9 +1049,9 @@ function exportCompletionsCSV() {
   showToast('CSV exported');
 }
 
-/* ═════════════════════════════════
+/* ═══════════════════════════════════════════
    EMPLOYEE
-═════════════════════════════════ */
+═══════════════════════════════════════════ */
 function empLogin() {
   if (!EMPLOYEES.length || !TASKS.length) { showToast('Sheets not loaded yet'); return; }
   const enroll = parseInt(document.getElementById('emp-enroll').value);
@@ -984,7 +1114,6 @@ function showEmpTasks(emp, myAssign, date) {
     }).join('');
     updateSaveButton(done, total);
   }
-
   window._empRender = renderEmpTasks;
   renderEmpTasks();
   show('sc-emp-tasks');
@@ -1042,8 +1171,7 @@ function submitCompletion() {
   const submittedAt = now.toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
   const record = {
     enroll: s.emp.id, name: s.emp.name,
-    role: s.emp.role || '',         // <-- NEW: role saved with completion
-    section: s.emp.section || '',   // <-- NEW
+    role: s.emp.role || '', section: s.emp.section || '',
     date: s.date, shift: s.shift, shiftLabel: s.shiftLabel,
     taskCount: s.tasks.length, taskIds: s.tasks.map(t => t.id),
     taskNames: s.tasks.map(t => t.name), submittedAt, submittedTimestamp: now.getTime()
