@@ -16,6 +16,7 @@
     --green: #1f7a4a; --green-light: #e6f5ed;
     --amber: #8a5a00; --amber-light: #fef3dc;
     --red: #9b2c2c; --red-light: #fdeaea;
+    --purple: #6b3ea0; --purple-light: #efe8fb;
     --radius: 10px; --radius-sm: 6px;
     --shadow: 0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
     --shadow-lg: 0 4px 16px rgba(0,0,0,.10), 0 1px 4px rgba(0,0,0,.06);
@@ -91,13 +92,15 @@
   .panel-card-title { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px; }
   .scroll-box { max-height: 360px; overflow-y: auto; }
   .search-input { width: 100%; margin-bottom: 8px; }
-  .emp-item { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: var(--radius-sm); cursor: pointer; border: 1px solid transparent; transition: all .13s; }
+  .role-filter { width: 100%; margin-bottom: 8px; }
+  .emp-item { display: flex; align-items: center; gap: 8px; padding: 8px 8px; border-radius: var(--radius-sm); cursor: pointer; border: 1px solid transparent; transition: all .13s; }
   .emp-item:hover { background: var(--surface2); }
   .emp-item.sel { background: var(--blue-light); border-color: #a8c4ea; }
-  .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--blue-light); color: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--blue-light); color: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
   .emp-item.sel .avatar { background: var(--blue); color: #fff; }
-  .emp-name { font-size: 13px; line-height: 1.2; }
-  .emp-id { font-size: 11px; color: var(--text2); font-family: var(--mono); }
+  .emp-name { font-size: 13px; line-height: 1.3; font-weight: 500; }
+  .emp-id { font-size: 11px; color: var(--text2); font-family: var(--mono); margin-top: 1px; line-height: 1.3; }
+  .emp-role-badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 1px 7px; border-radius: 99px; background: var(--purple-light); color: var(--purple); margin-left: 4px; }
   .task-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px; border-radius: var(--radius-sm); cursor: pointer; border: 1px solid transparent; transition: all .13s; }
   .task-item:hover { background: var(--surface2); }
   .task-item.sel { background: var(--blue-light); border-color: #a8c4ea; }
@@ -105,13 +108,13 @@
   .chk.on { background: var(--blue); border-color: var(--blue); color: #fff; }
   .task-name-s { font-size: 12px; line-height: 1.4; font-weight: 500; }
   .task-meta-s { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.45; }
-  .task-roles-s { font-size: 10px; color: var(--text3); margin-top: 2px; }
   .badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 99px; }
   .b-h { background: var(--red-light); color: var(--red); }
   .b-m { background: var(--amber-light); color: var(--amber); }
   .b-l { background: var(--green-light); color: var(--green); }
   .b-shift { background: var(--blue-light); color: var(--blue); }
   .b-done { background: var(--green-light); color: var(--green); }
+  .b-role { background: var(--purple-light); color: var(--purple); }
   .tag { font-size: 10px; padding: 1px 7px; border-radius: 99px; background:var(--surface2); color: var(--text2); display: inline-block; margin: 1px; }
   .table-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -125,7 +128,8 @@
   .empty-icon { font-size: 28px; margin-bottom: 8px; opacity: .5; }
   .emp-header-card { background: linear-gradient(135deg, var(--blue) 0%, #1a3d7a 100%); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 16px; color: #fff; }
   .emp-header-card .name { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
-  .emp-header-card .meta { font-size: 12px; opacity: .8; margin-bottom: 12px; }
+  .emp-header-card .meta { font-size: 12px; opacity: .85; margin-bottom: 12px; }
+  .emp-header-card .role-pill { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 99px; background: rgba(255,255,255,.2); margin-left: 6px; }
   .prog-track { background: rgba(255,255,255,.2); border-radius: 99px; height: 6px; overflow: hidden; }
   .prog-fill { height: 100%; background: #fff; border-radius: 99px; transition: width .4s ease; }
   .prog-label { display: flex; justify-content: space-between; font-size: 11px; opacity: .8; margin-top: 5px; }
@@ -198,14 +202,12 @@
       </div>
       <h1 class="home-title">Task-based work<br>scheduling system</h1>
       <p class="home-sub">Managers assign tasks per shift. Employees view their personal checklist by enroll number.</p>
-
       <div class="data-status loading" id="data-status-emp">
         <div class="spinner"></div><span>Loading employees from sheet…</span>
       </div>
       <div class="data-status loading" id="data-status-tasks" style="margin-bottom:1.5rem;">
         <div class="spinner"></div><span>Loading tasks from sheet…</span>
       </div>
-
       <div class="mode-grid">
         <div class="mode-card disabled" id="card-mgr" onclick="goManager()">
           <div class="mode-icon">&#9783;</div>
@@ -262,13 +264,11 @@
       <div class="stat-card"><div class="stat-label">Assignments</div><div class="stat-val" id="st-asgn">0</div><div class="stat-sub">total records</div></div>
       <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-val" id="st-completed">0</div><div class="stat-sub">submissions</div></div>
     </div>
-
     <div class="tabs">
       <button class="tab active" onclick="mgrTab('assign')">Assign tasks</button>
       <button class="tab" onclick="mgrTab('list')">Assignment list</button>
       <button class="tab" onclick="mgrTab('completed')">Completed ✓</button>
     </div>
-
     <div class="mpanel active" id="mp-assign">
       <div class="assign-bar">
         <div class="field">
@@ -284,7 +284,7 @@
           <label>Assignment method</label>
           <select id="m-method" onchange="renderAssignUI()">
             <option value="manual">Manual — pick employee + tasks</option>
-            <option value="role">By role group</option>
+            <option value="role">By employee role</option>
             <option value="auto">Auto-assign by role match</option>
           </select>
         </div>
@@ -296,7 +296,6 @@
       </div>
       <div class="err-box" id="assign-err" style="margin-top:10px;"></div>
     </div>
-
     <div class="mpanel" id="mp-list">
       <div class="filter-row">
         <label>Filter by date:</label>
@@ -312,7 +311,6 @@
       </div>
       <div class="table-wrap" id="asgn-table-wrap"></div>
     </div>
-
     <div class="mpanel" id="mp-completed">
       <div class="filter-row">
         <label>Filter by date:</label>
@@ -367,7 +365,6 @@
       </div>
     </div>
     <div id="et-task-list"></div>
-
     <div class="save-section locked" id="save-section">
       <div class="save-title" id="save-title">Complete all tasks to enable submission</div>
       <div class="save-sub" id="save-sub">Tick every task above, then the Save button will activate</div>
@@ -389,6 +386,7 @@
     <div class="modal-body">
       <div class="modal-row"><span class="lbl">Employee</span><span class="val" id="cm-name">—</span></div>
       <div class="modal-row"><span class="lbl">Enroll</span><span class="val" id="cm-enroll">—</span></div>
+      <div class="modal-row"><span class="lbl">Role</span><span class="val" id="cm-role">—</span></div>
       <div class="modal-row"><span class="lbl">Date · Shift</span><span class="val" id="cm-shift">—</span></div>
       <div class="modal-row"><span class="lbl">Tasks completed</span><span class="val" id="cm-tasks">—</span></div>
       <div class="modal-row"><span class="lbl">Submitted at</span><span class="val" id="cm-time">—</span></div>
@@ -403,23 +401,22 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ═══════════════════════════════════════════
-   GOOGLE SHEET CONFIG — TWO TABS
-═══════════════════════════════════════════ */
+/* ═════════════════════════════════
+   GOOGLE SHEET CONFIG
+═════════════════════════════════ */
 const SHEET_ID = '1QdeTUZNWQjnlNXLAe3DPHlisP1Wb8XOEyW5L5BLOJeM';
-const EMP_SHEET_GID = '305497321';                                      // employees tab
-const TASKS_SHEET_GID = '0';                                            // tasks tab (Section / Role / Work Name / Required time)
+const EMP_SHEET_GID = '305497321';
+const TASKS_SHEET_GID = '0';
 const EMP_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${EMP_SHEET_GID}`;
 const TASKS_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${TASKS_SHEET_GID}`;
 
-/* ═══════════════════════════════════════════
-   STATE — both EMPLOYEES and TASKS now load from sheets
-═══════════════════════════════════════════ */
+/* STATE */
 let EMPLOYEES = [];
 let empMap = {};
+let EMP_ROLE_LIST = [];        // <-- NEW: distinct list of employee roles for filter dropdown
 let TASKS = [];
 let taskMap = {};
-let ROLE_LIST = [];
+let ROLE_LIST = [];            // task-roles
 const SHIFT_TIMES = { A:{s:"06:00",e:"14:00"}, B:{s:"14:00",e:"22:00"}, C:{s:"22:00",e:"06:00"} };
 
 let assignments = JSON.parse(localStorage.getItem('sms_assignments') || '[]');
@@ -429,10 +426,9 @@ let selTasks = new Set();
 let activeRole = '';
 let empCompleted = new Set();
 let currentEmpSession = null;
+let empRoleFilter = '';        // <-- NEW: current filter value
 
-/* ═══════════════════════════════════════════
-   CSV PARSER
-═══════════════════════════════════════════ */
+/* CSV PARSER */
 function parseCSV(text) {
   const rows = [];
   let cur = '', row = [], inQuotes = false;
@@ -452,9 +448,9 @@ function parseCSV(text) {
   return rows;
 }
 
-/* ═══════════════════════════════════════════
-   LOAD EMPLOYEES (gid 305497321)
-═══════════════════════════════════════════ */
+/* ═════════════════════════════════
+   LOAD EMPLOYEES — now includes Role (Column D)
+═════════════════════════════════ */
 async function loadEmployeesFromSheet() {
   const status = document.getElementById('data-status-emp');
   status.className = 'data-status loading';
@@ -472,8 +468,10 @@ async function loadEmployeesFromSheet() {
 
     const header = rows[headerIdx].map(h => h.toLowerCase().trim());
     const colSection = header.findIndex(h => /section/i.test(h));
-    const colEnroll = header.findIndex(h => /enroll/i.test(h));
-    const colName = header.findIndex(h => /name/i.test(h));
+    const colEnroll  = header.findIndex(h => /enroll/i.test(h));
+    const colName    = header.findIndex(h => /name/i.test(h));
+    const colRole    = header.findIndex(h => /^role$|role/i.test(h));   // <-- NEW: detect Role column
+
     if (colEnroll === -1 || colName === -1) throw new Error('Missing Enroll/Name columns');
 
     EMPLOYEES = rows.slice(headerIdx + 1).map(r => {
@@ -481,15 +479,24 @@ async function loadEmployeesFromSheet() {
       const nameStr = (r[colName] || '').toString().trim();
       const id = parseInt(idStr.replace(/[^0-9]/g, ''));
       if (!id || !nameStr) return null;
-      return { id, name: nameStr, section: colSection >= 0 ? (r[colSection] || '').toString().trim() : '' };
+      return {
+        id,
+        name: nameStr,
+        section: colSection >= 0 ? (r[colSection] || '').toString().trim() : '',
+        role: colRole >= 0 ? (r[colRole] || '').toString().trim() : ''   // <-- NEW
+      };
     }).filter(Boolean);
 
     if (!EMPLOYEES.length) throw new Error('No valid employees');
+
     empMap = {};
     EMPLOYEES.forEach(e => empMap[e.id] = e);
 
+    // Build distinct role list for filter dropdown
+    EMP_ROLE_LIST = [...new Set(EMPLOYEES.map(e => e.role).filter(Boolean))].sort();
+
     status.className = 'data-status ok';
-    status.innerHTML = `<span>✓ Loaded ${EMPLOYEES.length} employees</span>`;
+    status.innerHTML = `<span>✓ Loaded ${EMPLOYEES.length} employees · ${EMP_ROLE_LIST.length} roles</span>`;
     return true;
   } catch (err) {
     console.error('Emp load error:', err);
@@ -499,9 +506,9 @@ async function loadEmployeesFromSheet() {
   }
 }
 
-/* ═══════════════════════════════════════════
-   LOAD TASKS (gid 0) — columns A=Section, B=Role, C=Work Name, D=Required time
-═══════════════════════════════════════════ */
+/* ═════════════════════════════════
+   LOAD TASKS — same as before
+═════════════════════════════════ */
 async function loadTasksFromSheet() {
   const status = document.getElementById('data-status-tasks');
   status.className = 'data-status loading';
@@ -514,7 +521,6 @@ async function loadTasksFromSheet() {
     const rows = parseCSV(csv);
     if (!rows.length) throw new Error('Tasks sheet is empty');
 
-    // Detect header row
     let headerIdx = rows.findIndex(r => r.some(c => /work\s*name/i.test(c) || /required\s*time/i.test(c)));
     if (headerIdx === -1) headerIdx = 0;
 
@@ -523,66 +529,45 @@ async function loadTasksFromSheet() {
     let colRole    = header.findIndex(h => /role/i.test(h));
     let colWork    = header.findIndex(h => /work\s*name|task\s*name/i.test(h));
     let colTime    = header.findIndex(h => /time|duration|minute/i.test(h));
-
-    // Fallback: if header detection failed, use fixed columns A=0, B=1, C=2, D=3
     if (colWork === -1) { colSection = 0; colRole = 1; colWork = 2; colTime = 3; }
 
-    const dataRows = rows.slice(headerIdx + 1);
-    TASKS = dataRows.map((r, idx) => {
+    TASKS = rows.slice(headerIdx + 1).map((r, idx) => {
       const name = (r[colWork] || '').toString().trim();
       const rolesStr = colRole >= 0 ? (r[colRole] || '').toString().trim() : '';
       const timeStr = colTime >= 0 ? (r[colTime] || '').toString().trim() : '0';
       const section = colSection >= 0 ? (r[colSection] || '').toString().trim() : '';
       if (!name) return null;
-
-      // Split roles by comma
-      const roles = rolesStr
-        ? rolesStr.split(/[,;/]/).map(s => s.trim()).filter(Boolean)
-        : ['General'];
-
-      // Parse time (number of minutes)
+      const roles = rolesStr ? rolesStr.split(/[,;/]/).map(s => s.trim()).filter(Boolean) : ['General'];
       const time = parseInt(timeStr.replace(/[^0-9]/g, '')) || 0;
-
-      // Auto priority based on time: <=60 Low, 60-180 Medium, >180 High
       let prio = 'M';
       if (time > 180) prio = 'H';
       else if (time <= 60) prio = 'L';
-
       return { id: idx, name, roles, time, prio, section };
     }).filter(Boolean);
 
     if (!TASKS.length) throw new Error('No valid tasks found');
-
     taskMap = {};
     TASKS.forEach(t => taskMap[t.id] = t);
     ROLE_LIST = [...new Set(TASKS.flatMap(t => t.roles))].filter(Boolean).sort();
     activeRole = ROLE_LIST[0] || '';
 
     status.className = 'data-status ok';
-    status.innerHTML = `<span>✓ Loaded ${TASKS.length} tasks · ${ROLE_LIST.length} roles</span>`;
+    status.innerHTML = `<span>✓ Loaded ${TASKS.length} tasks · ${ROLE_LIST.length} task-roles</span>`;
     return true;
   } catch (err) {
     console.error('Tasks load error:', err);
     status.className = 'data-status err';
-    status.innerHTML = `<span>⚠ Tasks: ${err.message}. Make sheet "Anyone with link – Viewer".</span>`;
+    status.innerHTML = `<span>⚠ Tasks: ${err.message}.</span>`;
     return false;
   }
 }
 
-/* ═══════════════════════════════════════════
-   LOAD BOTH SHEETS IN PARALLEL
-═══════════════════════════════════════════ */
 async function loadAllData() {
   const cardMgr = document.getElementById('card-mgr');
   const cardEmp = document.getElementById('card-emp');
   cardMgr.classList.add('disabled');
   cardEmp.classList.add('disabled');
-
-  const [okEmp, okTasks] = await Promise.all([
-    loadEmployeesFromSheet(),
-    loadTasksFromSheet()
-  ]);
-
+  const [okEmp, okTasks] = await Promise.all([loadEmployeesFromSheet(), loadTasksFromSheet()]);
   if (okEmp && okTasks) {
     cardMgr.classList.remove('disabled');
     cardEmp.classList.remove('disabled');
@@ -602,13 +587,11 @@ function reloadAll() {
   document.getElementById('data-status-tasks').style.display = '';
   loadAllData().then(ok => {
     if (ok) showToast('Sheets refreshed successfully');
-    else showToast('Some sheets failed to load — check sharing');
+    else showToast('Some sheets failed to load');
   });
 }
 
-/* ═══════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════ */
+/* HELPERS */
 function today() { return new Date().toISOString().split('T')[0]; }
 function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 function fmt(min) { return min >= 60 ? `${Math.floor(min/60)}h${min%60 ? ` ${min%60}m` : ''}` : (min || 0) + 'm'; }
@@ -627,20 +610,17 @@ function saveCompletions() { localStorage.setItem('sms_completions', JSON.string
 function saveAssignments() { localStorage.setItem('sms_assignments', JSON.stringify(assignments)); }
 function escapeHtml(s) { return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ═══════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════ */
+/* INIT */
 document.getElementById('m-date').value = today();
 document.getElementById('emp-date').value = today();
 document.getElementById('list-date-filter').value = today();
 document.getElementById('comp-date-filter').value = today();
 document.getElementById('mgr-date-label').textContent = new Date().toLocaleDateString('en-GB', {weekday:'long', day:'2-digit', month:'short', year:'numeric'});
-
 loadAllData();
 
-/* ═══════════════════════════════════════════
+/* ═════════════════════════════════
    MANAGER
-═══════════════════════════════════════════ */
+═════════════════════════════════ */
 function goManager() {
   if (!EMPLOYEES.length || !TASKS.length) { showToast('Sheets not loaded yet'); return; }
   show('sc-mgr-login');
@@ -672,10 +652,16 @@ function renderAssignUI() {
   const method = document.getElementById('m-method').value;
   const ui = document.getElementById('assign-ui');
   if (method === 'manual') {
+    // NEW: role filter dropdown ABOVE search box
+    const roleOptions = ['<option value="">All roles</option>',
+      ...EMP_ROLE_LIST.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`)].join('');
     ui.innerHTML = `<div class="assign-grid">
       <div class="panel-card">
         <div class="panel-card-title">Select employee (${EMPLOYEES.length} from sheet)</div>
-        <input class="search-input" placeholder="Search name, enroll, or section..." oninput="renderEmpList(this.value)">
+        <select class="role-filter" onchange="empRoleFilter=this.value;renderEmpList(document.getElementById('emp-search').value)">
+          ${roleOptions}
+        </select>
+        <input class="search-input" id="emp-search" placeholder="Search name, enroll, section, or role..." oninput="renderEmpList(this.value)">
         <div class="scroll-box" id="emp-sel-list"></div>
       </div>
       <div class="panel-card">
@@ -686,40 +672,53 @@ function renderAssignUI() {
     </div>`;
     renderEmpList(''); renderTaskList('');
   } else if (method === 'role') {
-    const opts = ROLE_LIST.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
+    // CHANGED: now uses EMPLOYEE roles from sheet
+    const opts = EMP_ROLE_LIST.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
     ui.innerHTML = `<div class="assign-grid">
       <div class="panel-card">
-        <div class="panel-card-title">Select role group</div>
+        <div class="panel-card-title">Select employee role group</div>
         <select style="width:100%;margin-bottom:10px" onchange="roleGroupChange(this.value)">${opts}</select>
-        <div class="panel-card-title" style="margin-bottom:6px">Employees to assign</div>
+        <div class="panel-card-title" style="margin-bottom:6px">Employees with this role</div>
         <div class="scroll-box" id="role-emp-list"></div>
       </div>
       <div class="panel-card">
-        <div class="panel-card-title">Tasks for this role</div>
-        <div class="scroll-box" id="role-task-list"></div>
+        <div class="panel-card-title">Select tasks for this role</div>
+        <input class="search-input" placeholder="Search tasks..." oninput="renderTaskList(this.value)">
+        <div class="scroll-box" id="task-sel-list"></div>
       </div>
     </div>`;
-    roleGroupChange(ROLE_LIST[0] || '');
+    roleGroupChange(EMP_ROLE_LIST[0] || '');
+    renderTaskList('');
   } else {
     ui.innerHTML = `<div class="panel-card" style="max-width:500px">
       <div class="panel-card-title">Auto-assign settings</div>
-      <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;">All tasks matching the selected role will be assigned to the first 10 employees.</p>
-      <div class="field"><label>Target role</label>
-        <select id="auto-role" style="width:100%">${ROLE_LIST.map(r=>`<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('')}</select>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;">Pick an employee role group. All employees with that role will be auto-assigned every task whose required role matches.</p>
+      <div class="field"><label>Target employee role</label>
+        <select id="auto-role" style="width:100%">${EMP_ROLE_LIST.map(r=>`<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('')}</select>
       </div>
     </div>`;
   }
 }
 
+/* ═════════════════════════════════
+   RENDER EMPLOYEE LIST — now shows role + supports role filter
+═════════════════════════════════ */
 function renderEmpList(q) {
   const el = document.getElementById('emp-sel-list'); if (!el) return;
   const ql = (q || '').toLowerCase();
-  const f = EMPLOYEES.filter(e => !q || e.name.toLowerCase().includes(ql) || String(e.id).includes(q) || (e.section || '').toLowerCase().includes(ql));
+  const f = EMPLOYEES.filter(e => {
+    if (empRoleFilter && e.role !== empRoleFilter) return false;
+    if (!q) return true;
+    return e.name.toLowerCase().includes(ql)
+      || String(e.id).includes(q)
+      || (e.section || '').toLowerCase().includes(ql)
+      || (e.role || '').toLowerCase().includes(ql);
+  });
   el.innerHTML = f.slice(0, 100).map(e => `
     <div class="emp-item${selEmps.has(e.id) ? ' sel' : ''}" onclick="toggleEmp(${e.id})">
       <div class="avatar">${initials(e.name)}</div>
       <div style="flex:1;min-width:0">
-        <div class="emp-name">${escapeHtml(e.name)}</div>
+        <div class="emp-name">${escapeHtml(e.name)}${e.role ? ` <span class="emp-role-badge">${escapeHtml(e.role)}</span>` : ''}</div>
         <div class="emp-id">${e.id}${e.section ? ' · ' + escapeHtml(e.section) : ''}</div>
       </div>
     </div>`).join('') || '<div style="font-size:12px;color:var(--text3);padding:8px;">No matches</div>';
@@ -729,10 +728,7 @@ function renderTaskList(q) {
   const el = document.getElementById('task-sel-list'); if (!el) return;
   const ql = (q || '').toLowerCase();
   const f = TASKS.filter(t => !q || t.name.toLowerCase().includes(ql) || t.roles.some(r => r.toLowerCase().includes(ql)) || (t.section||'').toLowerCase().includes(ql));
-  if (!f.length) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:8px;">No matches</div>';
-    return;
-  }
+  if (!f.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:8px;">No matches</div>'; return; }
   el.innerHTML = f.map(t => {
     const pc = t.prio === 'H' ? 'b-h' : t.prio === 'M' ? 'b-m' : 'b-l';
     const pl = t.prio === 'H' ? 'High' : t.prio === 'M' ? 'Med' : 'Low';
@@ -750,34 +746,32 @@ function renderTaskList(q) {
   }).join('');
 }
 
+/* ═════════════════════════════════
+   ROLE GROUP — now filters EMPLOYEES by role from sheet
+═════════════════════════════════ */
 function roleGroupChange(role) {
   activeRole = role;
   const empEl = document.getElementById('role-emp-list');
-  const taskEl = document.getElementById('role-task-list');
   const safeRole = role.replace(/'/g,"\\'").replace(/"/g,'\\"');
   if (empEl) {
-    empEl.innerHTML = EMPLOYEES.slice(0, 80).map(e => `
+    const filteredEmps = EMPLOYEES.filter(e => e.role === role);
+    empEl.innerHTML = filteredEmps.length ? filteredEmps.map(e => `
       <div class="emp-item${selEmps.has(e.id) ? ' sel' : ''}" onclick="toggleEmp(${e.id});roleGroupChange('${safeRole}')">
         <div class="avatar">${initials(e.name)}</div>
-        <div><div class="emp-name">${escapeHtml(e.name)}</div><div class="emp-id">${e.id}</div></div>
-      </div>`).join('');
-  }
-  if (taskEl) {
-    const roleTasks = TASKS.filter(t => t.roles.includes(role));
-    taskEl.innerHTML = roleTasks.length ? roleTasks.map(t => {
-      const pc = t.prio === 'H' ? 'b-h' : t.prio === 'M' ? 'b-m' : 'b-l';
-      return `<div class="task-item${selTasks.has(t.id) ? ' sel' : ''}" onclick="toggleTaskSel(${t.id});roleGroupChange('${safeRole}')">
-        <div class="chk${selTasks.has(t.id) ? ' on' : ''}">${selTasks.has(t.id) ? '&#10003;' : ''}</div>
-        <div>
-          <div class="task-name-s">${escapeHtml(t.name)}</div>
-          <div class="task-meta-s"><span class="badge ${pc}" style="margin-right:4px">${t.prio==='H'?'High':t.prio==='M'?'Med':'Low'}</span>${fmt(t.time)}</div>
+        <div style="flex:1;min-width:0">
+          <div class="emp-name">${escapeHtml(e.name)}</div>
+          <div class="emp-id">${e.id}${e.section ? ' · ' + escapeHtml(e.section) : ''}</div>
         </div>
-      </div>`;
-    }).join('') : '<div style="font-size:12px;color:var(--text3);padding:8px;">No tasks for this role</div>';
+      </div>`).join('') : '<div style="font-size:12px;color:var(--text3);padding:8px;">No employees with this role</div>';
   }
 }
 
-function toggleEmp(id) { if (selEmps.has(id)) selEmps.delete(id); else selEmps.add(id); renderEmpList(''); }
+function toggleEmp(id) {
+  if (selEmps.has(id)) selEmps.delete(id); else selEmps.add(id);
+  // Re-render whichever list is visible
+  if (document.getElementById('emp-sel-list')) renderEmpList(document.getElementById('emp-search')?.value || '');
+  if (document.getElementById('role-emp-list')) roleGroupChange(activeRole);
+}
 function toggleTaskSel(id) { if (selTasks.has(id)) selTasks.delete(id); else selTasks.add(id); renderTaskList(''); }
 
 function doAssign() {
@@ -788,17 +782,20 @@ function doAssign() {
   err.style.display = 'none';
   if (method === 'auto') {
     const role = document.getElementById('auto-role').value;
-    const roleTasks = TASKS.filter(t => t.roles.includes(role));
-    if (!roleTasks.length) { err.textContent = 'No tasks found for this role.'; err.style.display = 'block'; return; }
+    const empsInRole = EMPLOYEES.filter(e => e.role === role);
+    if (!empsInRole.length) { err.textContent = `No employees with role "${role}".`; err.style.display = 'block'; return; }
+    // Match tasks where any task-role matches employee role (case-insensitive)
+    const matchingTasks = TASKS.filter(t => t.roles.some(r => r.toLowerCase().includes(role.toLowerCase()) || role.toLowerCase().includes(r.toLowerCase())));
+    if (!matchingTasks.length) { err.textContent = 'No tasks match this employee role.'; err.style.display = 'block'; return; }
     let count = 0;
-    EMPLOYEES.slice(0, 10).forEach(emp => {
-      roleTasks.forEach(task => {
+    empsInRole.forEach(emp => {
+      matchingTasks.forEach(task => {
         if (!assignments.find(a => a.enroll === emp.id && a.taskId === task.id && a.date === date && a.shift === shift)) {
           assignments.push({enroll: emp.id, taskId: task.id, shift, date}); count++;
         }
       });
     });
-    showToast(`Auto-assigned ${count} records for: ${role}`);
+    showToast(`Auto-assigned ${count} records (${empsInRole.length} employees × ${matchingTasks.length} tasks)`);
   } else {
     if (!selEmps.size) { err.textContent = 'Please select at least one employee.'; err.style.display = 'block'; return; }
     if (!selTasks.size) { err.textContent = 'Please select at least one task.'; err.style.display = 'block'; return; }
@@ -845,16 +842,16 @@ function renderAssignTable() {
     }
   });
   let html = `<table><thead><tr>
-    <th style="width:26%">Employee</th><th style="width:10%">Date</th><th style="width:10%">Shift</th>
+    <th style="width:30%">Employee · Role</th><th style="width:10%">Date</th><th style="width:10%">Shift</th>
     <th>Assigned tasks</th><th style="width:90px">Status</th><th style="width:70px"></th>
   </tr></thead><tbody>`;
   Object.values(byKey).forEach(row => {
-    const emp = empMap[row.enroll] || {name: 'Unknown (not in sheet)', id: row.enroll};
+    const emp = empMap[row.enroll] || {name: 'Unknown (not in sheet)', id: row.enroll, role: ''};
     const taskTags = row.tasks.map(tid => taskMap[tid] ? `<span class="tag">${escapeHtml(taskMap[tid].name)}</span>` : `<span class="tag">Task #${tid}</span>`).join('');
     const isCompleted = completions.find(c => c.enroll === row.enroll && c.date === row.date && c.shift === row.shift);
     const statusBadge = isCompleted ? '<span class="badge b-done">✓ Done</span>' : '<span class="badge b-m">Pending</span>';
     html += `<tr>
-      <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:26px;height:26px;font-size:10px">${initials(emp.name)}</div><div><div style="font-size:13px;font-weight:500">${escapeHtml(emp.name)}</div><div style="font-size:11px;color:var(--text2);font-family:var(--mono)">${row.enroll}</div></div></div></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:26px;height:26px;font-size:10px">${initials(emp.name)}</div><div><div style="font-size:13px;font-weight:500">${escapeHtml(emp.name)}${emp.role ? ` <span class="badge b-role">${escapeHtml(emp.role)}</span>` : ''}</div><div style="font-size:11px;color:var(--text2);font-family:var(--mono)">${row.enroll}</div></div></div></td>
       <td style="font-size:12px">${row.date}</td>
       <td><span class="badge b-shift">Shift ${row.shift}</span></td>
       <td>${taskTags}</td><td>${statusBadge}</td>
@@ -879,13 +876,13 @@ function renderCompletedTable() {
     wrap.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div>No completed submissions yet.</div>'; return;
   }
   let html = `<table><thead><tr>
-    <th>Employee</th><th style="width:10%">Date</th><th style="width:10%">Shift</th>
+    <th>Employee · Role</th><th style="width:10%">Date</th><th style="width:10%">Shift</th>
     <th style="width:10%">Tasks</th><th style="width:18%">Submitted at</th><th style="width:90px"></th>
   </tr></thead><tbody>`;
   filtered.slice().reverse().forEach((c, idx) => {
     const realIdx = completions.length - 1 - idx;
     html += `<tr>
-      <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:26px;height:26px;font-size:10px">${initials(c.name)}</div><div><div style="font-size:13px;font-weight:500">${escapeHtml(c.name)}</div><div style="font-size:11px;color:var(--text2);font-family:var(--mono)">${c.enroll}</div></div></div></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:26px;height:26px;font-size:10px">${initials(c.name)}</div><div><div style="font-size:13px;font-weight:500">${escapeHtml(c.name)}${c.role ? ` <span class="badge b-role">${escapeHtml(c.role)}</span>` : ''}</div><div style="font-size:11px;color:var(--text2);font-family:var(--mono)">${c.enroll}</div></div></div></td>
       <td style="font-size:12px">${c.date}</td>
       <td><span class="badge b-shift">Shift ${c.shift}</span></td>
       <td><span class="badge b-done">${c.taskCount} ✓</span></td>
@@ -906,9 +903,10 @@ function removeCompletion(idx) {
 
 function exportCompletionsCSV() {
   if (!completions.length) { showToast('No completions'); return; }
-  const headers = ['Enroll','Name','Date','Shift','Tasks Completed','Task Names','Submitted At'];
+  const headers = ['Enroll','Name','Role','Section','Date','Shift','Tasks Completed','Task Names','Submitted At'];
   const rows = completions.map(c => [
-    c.enroll, `"${c.name}"`, c.date, c.shift, c.taskCount,
+    c.enroll, `"${c.name}"`, `"${c.role||''}"`, `"${c.section||''}"`,
+    c.date, c.shift, c.taskCount,
     `"${c.taskNames.join('; ')}"`, c.submittedAt
   ].join(','));
   const csv = [headers.join(','), ...rows].join('\n');
@@ -921,9 +919,9 @@ function exportCompletionsCSV() {
   showToast('CSV exported');
 }
 
-/* ═══════════════════════════════════════════
+/* ═════════════════════════════════
    EMPLOYEE
-═══════════════════════════════════════════ */
+═════════════════════════════════ */
 function empLogin() {
   if (!EMPLOYEES.length || !TASKS.length) { showToast('Sheets not loaded yet'); return; }
   const enroll = parseInt(document.getElementById('emp-enroll').value);
@@ -945,17 +943,13 @@ function showEmpTasks(emp, myAssign, date) {
   const shiftInfo = myAssign[0] ? SHIFT_TIMES[myAssign[0].shift] : {s:'--', e:'--'};
   const shiftLabel = myAssign[0] ? `Shift ${myAssign[0].shift} · ${shiftInfo.s} – ${shiftInfo.e}` : '';
   const shiftCode = myAssign[0] ? myAssign[0].shift : '';
-
   document.getElementById('et-name').textContent = emp.name;
   document.getElementById('et-meta').textContent = `${date} · ${shiftLabel}`;
-  document.getElementById('et-header-name').textContent = emp.name;
-  document.getElementById('et-header-meta').textContent = `Enroll: ${emp.id}  ·  ${shiftLabel}  ·  ${myAssign.length} task${myAssign.length !== 1 ? 's' : ''}`;
-
+  document.getElementById('et-header-name').innerHTML = `${escapeHtml(emp.name)}${emp.role ? ` <span class="role-pill">${escapeHtml(emp.role)}</span>` : ''}`;
+  document.getElementById('et-header-meta').textContent = `Enroll: ${emp.id}${emp.section ? ' · ' + emp.section : ''}  ·  ${shiftLabel}  ·  ${myAssign.length} task${myAssign.length !== 1 ? 's' : ''}`;
   const tasksSorted = myAssign.map(a => taskMap[a.taskId]).filter(Boolean)
     .sort((a, b) => ({ H:0, M:1, L:2 })[a.prio] - ({ H:0, M:1, L:2 })[b.prio]);
-
   currentEmpSession = { emp, date, shift: shiftCode, shiftLabel, tasks: tasksSorted };
-
   const already = completions.find(c => c.enroll === emp.id && c.date === date && c.shift === shiftCode);
   if (already) empCompleted = new Set(tasksSorted.map(t => t.id));
 
@@ -963,12 +957,10 @@ function showEmpTasks(emp, myAssign, date) {
     const done = empCompleted.size;
     const total = tasksSorted.length;
     const pct = total ? Math.round((done / total) * 100) : 0;
-
     document.getElementById('et-prog').style.width = pct + '%';
     document.getElementById('et-prog-done').textContent = `${done} of ${total} task${total !== 1 ? 's' : ''} completed`;
     document.getElementById('et-prog-pct').textContent = pct + '%';
     document.getElementById('et-count').textContent = `${done}/${total} done`;
-
     let cursor = shiftInfo.s || '06:00';
     document.getElementById('et-task-list').innerHTML = tasksSorted.map(t => {
       const start = cursor;
@@ -1049,7 +1041,10 @@ function submitCompletion() {
   const now = new Date();
   const submittedAt = now.toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
   const record = {
-    enroll: s.emp.id, name: s.emp.name, date: s.date, shift: s.shift, shiftLabel: s.shiftLabel,
+    enroll: s.emp.id, name: s.emp.name,
+    role: s.emp.role || '',         // <-- NEW: role saved with completion
+    section: s.emp.section || '',   // <-- NEW
+    date: s.date, shift: s.shift, shiftLabel: s.shiftLabel,
     taskCount: s.tasks.length, taskIds: s.tasks.map(t => t.id),
     taskNames: s.tasks.map(t => t.name), submittedAt, submittedTimestamp: now.getTime()
   };
@@ -1062,6 +1057,7 @@ function submitCompletion() {
 function showCongrats(record) {
   document.getElementById('cm-name').textContent = record.name;
   document.getElementById('cm-enroll').textContent = record.enroll;
+  document.getElementById('cm-role').textContent = record.role || '—';
   document.getElementById('cm-shift').textContent = `${record.date} · ${record.shiftLabel}`;
   document.getElementById('cm-tasks').textContent = `${record.taskCount} task${record.taskCount !== 1 ? 's' : ''}`;
   document.getElementById('cm-time').textContent = record.submittedAt;
@@ -1100,6 +1096,8 @@ function downloadReport() {
 
 Employee Name : ${record.name}
 Enroll Number : ${record.enroll}
+Role          : ${record.role || 'N/A'}
+Section       : ${record.section || 'N/A'}
 Date          : ${record.date}
 Shift         : ${record.shiftLabel}
 Submitted At  : ${record.submittedAt}
