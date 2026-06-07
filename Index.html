@@ -44,11 +44,9 @@
     line-height: 1.5;
   }
 
-  /* ── SCREEN SYSTEM ── */
   .screen { display: none; min-height: 100vh; }
   .screen.active { display: flex; flex-direction: column; }
 
-  /* ── HOME ── */
   #sc-home {
     align-items: center;
     justify-content: center;
@@ -87,7 +85,6 @@
   .mode-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
   .mode-card p { font-size: 12px; color: var(--text2); line-height: 1.4; }
 
-  /* ── TOPBAR ── */
   .topbar {
     display: flex; align-items: center; gap: 10px;
     padding: 12px 16px; background: var(--surface);
@@ -106,10 +103,8 @@
   }
   .back-btn:hover { background: var(--border); }
 
-  /* ── CONTENT WRAPPER ── */
   .content { flex: 1; padding: 16px; max-width: 900px; width: 100%; margin: 0 auto; }
 
-  /* ── LOGIN ── */
   .login-wrap {
     max-width: 340px; margin: 4rem auto; padding: 2rem;
     background: var(--surface); border: 1px solid var(--border);
@@ -133,7 +128,6 @@
     display: none; border-left: 3px solid var(--red);
   }
 
-  /* ── BUTTONS ── */
   .btn {
     padding: 8px 16px; font-size: 13px; font-family: var(--font); font-weight: 500;
     border: 1px solid var(--border2); border-radius: var(--radius-sm);
@@ -146,14 +140,12 @@
   .btn.full { width: 100%; padding: 10px; justify-content: center; }
   .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 
-  /* ── STATS ROW ── */
   .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
   .stat-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
   .stat-val { font-size: 24px; font-weight: 600; color: var(--text); line-height: 1; }
   .stat-sub { font-size: 11px; color: var(--text3); margin-top: 3px; }
 
-  /* ── TABS ── */
   .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 16px; gap: 0; }
   .tab {
     padding: 9px 16px; font-size: 13px; font-weight: 500; cursor: pointer;
@@ -165,7 +157,6 @@
   .mpanel { display: none; }
   .mpanel.active { display: block; }
 
-  /* ── ASSIGN BAR ── */
   .assign-bar {
     display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;
     background: var(--surface); border: 1px solid var(--border);
@@ -173,7 +164,6 @@
   }
   .assign-bar .field { margin-bottom: 0; flex: 1; min-width: 140px; }
 
-  /* ── ASSIGN GRID ── */
   .assign-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 640px) { .assign-grid { grid-template-columns: 1fr; } }
   .panel-card {
@@ -187,7 +177,6 @@
   .scroll-box { max-height: 320px; overflow-y: auto; }
   .search-input { width: 100%; margin-bottom: 8px; }
 
-  /* ── EMPLOYEE ITEMS ── */
   .emp-item {
     display: flex; align-items: center; gap: 8px; padding: 7px 8px;
     border-radius: var(--radius-sm); cursor: pointer;
@@ -205,7 +194,6 @@
   .emp-name { font-size: 13px; line-height: 1.2; }
   .emp-id { font-size: 11px; color: var(--text2); font-family: var(--mono); }
 
-  /* ── TASK ITEMS ── */
   .task-item {
     display: flex; align-items: flex-start; gap: 8px; padding: 8px;
     border-radius: var(--radius-sm); cursor: pointer;
@@ -223,7 +211,6 @@
   .task-name-s { font-size: 12px; line-height: 1.4; }
   .task-meta-s { font-size: 11px; color: var(--text2); margin-top: 2px; }
 
-  /* ── BADGES ── */
   .badge {
     display: inline-block; font-size: 10px; font-weight: 500;
     padding: 2px 7px; border-radius: 99px;
@@ -234,7 +221,6 @@
   .b-shift { background: var(--blue-light); color: var(--blue); }
   .tag { font-size: 10px; padding: 1px 7px; border-radius: 99px; background:var(--surface2); color: var(--text2); display: inline-block; margin: 1px; }
 
-  /* ── ASSIGNMENT TABLE ── */
   .table-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th {
@@ -252,14 +238,12 @@
   }
   .del-btn:hover { background: var(--red-light); color: var(--red); border-color: var(--red); }
 
-  /* ── EMPTY STATE ── */
   .empty {
     padding: 2.5rem; text-align: center; font-size: 13px; color: var(--text2);
     border: 1.5px dashed var(--border); border-radius: var(--radius);
   }
   .empty-icon { font-size: 28px; margin-bottom: 8px; opacity: .5; }
 
-  /* ── EMPLOYEE TASK VIEW ── */
   .emp-header-card {
     background: linear-gradient(135deg, var(--blue) 0%, #1a3d7a 100%);
     border-radius: var(--radius); padding: 16px 18px; margin-bottom: 16px; color: #fff;
@@ -297,7 +281,6 @@
   }
   .done-label { font-size: 11px; color: var(--green); margin-top: 5px; font-weight: 500; }
 
-  /* ── TOAST ── */
   .toast {
     position: fixed; bottom: 20px; right: 20px;
     background: var(--text); color: #fff; padding: 10px 18px;
@@ -308,11 +291,9 @@
   }
   .toast.show { transform: translateY(0); opacity: 1; }
 
-  /* ── FILTER ROW ── */
   .filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
   .filter-row label { font-size: 12px; color: var(--text2); white-space: nowrap; }
 
-  /* ── SCROLLBAR ── */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
@@ -320,9 +301,7 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════
-     HOME
-═══════════════════════════════════════════ -->
+<!-- HOME -->
 <div class="screen active" id="sc-home">
   <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:2rem 1.5rem;">
     <div class="home-inner">
@@ -352,9 +331,7 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     MANAGER LOGIN
-═══════════════════════════════════════════ -->
+<!-- MANAGER LOGIN -->
 <div class="screen" id="sc-mgr-login">
   <div class="topbar">
     <button class="back-btn" onclick="show('sc-home')">&#8592;</button>
@@ -377,9 +354,7 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     MANAGER DASHBOARD
-═══════════════════════════════════════════ -->
+<!-- MANAGER DASHBOARD -->
 <div class="screen" id="sc-manager">
   <div class="topbar">
     <button class="back-btn" onclick="show('sc-home')">&#8592;</button>
@@ -401,7 +376,6 @@
       <button class="tab" onclick="mgrTab('list')">Assignment list</button>
     </div>
 
-    <!-- ASSIGN PANEL -->
     <div class="mpanel active" id="mp-assign">
       <div class="assign-bar">
         <div class="field">
@@ -435,7 +409,6 @@
       <div class="err-box" id="assign-err" style="margin-top:10px;"></div>
     </div>
 
-    <!-- LIST PANEL -->
     <div class="mpanel" id="mp-list">
       <div class="filter-row">
         <label>Filter by date:</label>
@@ -454,9 +427,7 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     EMPLOYEE LOGIN
-═══════════════════════════════════════════ -->
+<!-- EMPLOYEE LOGIN -->
 <div class="screen" id="sc-emp-login">
   <div class="topbar">
     <button class="back-btn" onclick="show('sc-home')">&#8592;</button>
@@ -479,9 +450,7 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     EMPLOYEE TASK VIEW
-═══════════════════════════════════════════ -->
+<!-- EMPLOYEE TASK VIEW -->
 <div class="screen" id="sc-emp-tasks">
   <div class="topbar">
     <button class="back-btn" onclick="show('sc-emp-login')">&#8592;</button>
@@ -505,7 +474,6 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -565,12 +533,12 @@ let empCompleted = new Set();
 ═══════════════════════════════════════════ */
 function today() { return new Date().toISOString().split('T')[0]; }
 function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-function fmt(min) { return min >= 60 ? ${Math.floor(min/60)}h${min%60 ? ` ${min%60}m : ''}` : min + 'm'; }
+function fmt(min) { return min >= 60 ? `${Math.floor(min/60)}h${min%60 ? ` ${min%60}m` : ''}` : min + 'm'; }
 function initials(n) { return n.split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase(); }
 function addTime(base, mins) {
   const [h, m] = base.split(':').map(Number);
   const tot = h * 60 + m + mins;
-  return ${String(Math.floor(tot/60) % 24).padStart(2,'0')}:${String(tot % 60).padStart(2,'0')};
+  return `${String(Math.floor(tot/60) % 24).padStart(2,'0')}:${String(tot % 60).padStart(2,'0')}`;
 }
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -647,7 +615,7 @@ function renderAssignUI() {
     renderEmpList(''); renderTaskList('');
 
   } else if (method === 'role') {
-    const opts = ROLE_LIST.map(r => <option value="${r}">${r}</option>).join('');
+    const opts = ROLE_LIST.map(r => `<option value="${r}">${r}</option>`).join('');
     ui.innerHTML = `<div class="assign-grid">
       <div class="panel-card">
         <div class="panel-card-title">Select role group</div>
@@ -667,7 +635,7 @@ function renderAssignUI() {
       <div class="panel-card-title">Auto-assign settings</div>
       <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;">All tasks matching the selected role will be assigned to the first 10 employees in the roster for the chosen shift and date.</p>
       <div class="field"><label>Target role</label>
-        <select id="auto-role" style="width:100%">${ROLE_LIST.map(r=><option value="${r}">${r}</option>).join('')}</select>
+        <select id="auto-role" style="width:100%">${ROLE_LIST.map(r=>`<option value="${r}">${r}</option>`).join('')}</select>
       </div>
     </div>`;
   }
@@ -746,9 +714,9 @@ function doAssign() {
           assignments.push({enroll: emp.id, taskId: task.id, shift, date});
           count++;
         }
- });
+      });
     });
-    showToast(Auto-assigned ${count} records for role: ${role});
+    showToast(`Auto-assigned ${count} records for role: ${role}`);
   } else {
     if (!selEmps.size) { err.textContent = 'Please select at least one employee.'; err.style.display = 'block'; return; }
     if (!selTasks.size) { err.textContent = 'Please select at least one task.'; err.style.display = 'block'; return; }
@@ -761,7 +729,7 @@ function doAssign() {
         }
       });
     });
-    showToast(${count} assignment${count !== 1 ? 's' : ''} saved successfully);
+    showToast(`${count} assignment${count !== 1 ? 's' : ''} saved successfully`);
   }
 
   updateStats();
@@ -792,7 +760,7 @@ function renderAssignTable() {
   const byKey = {};
   assignments.forEach((a, i) => {
     if ((!dateF || a.date === dateF) && (!shiftF || a.shift === shiftF)) {
-      const key = ${a.enroll}__${a.date}__${a.shift};
+      const key = `${a.enroll}__${a.date}__${a.shift}`;
       if (!byKey[key]) byKey[key] = {enroll: a.enroll, date: a.date, shift: a.shift, tasks: [], idxs: []};
       byKey[key].tasks.push(a.taskId);
       byKey[key].idxs.push(i);
@@ -810,7 +778,7 @@ function renderAssignTable() {
 
   Object.values(byKey).forEach(row => {
     const emp = empMap[row.enroll] || {name: 'Unknown', id: row.enroll};
-    const taskTags = row.tasks.map(tid => taskMap[tid] ? <span class="tag">${taskMap[tid].name}</span> : '').join('');
+    const taskTags = row.tasks.map(tid => taskMap[tid] ? `<span class="tag">${taskMap[tid].name}</span>` : '').join('');
     html += `<tr>
       <td>
         <div style="display:flex;align-items:center;gap:8px">
@@ -820,7 +788,7 @@ function renderAssignTable() {
       </td>
       <td style="font-size:12px">${row.date}</td>
       <td><span class="badge b-shift">Shift ${row.shift}</span></td><td>${taskTags}</td>
-      <td><button class="del-btn" onclick="deleteGroup(${JSON.stringify(row.idxs)})">Remove</button></td>
+      <td><button class="del-btn" onclick='deleteGroup(${JSON.stringify(row.idxs)})'>Remove</button></td>
     </tr>`;
   });
 
@@ -845,11 +813,11 @@ function empLogin() {
   err.style.display = 'none';
 
   const emp = empMap[enroll];
-  if (!emp) { err.textContent = Enroll ${enroll} not found in the roster.; err.style.display = 'block'; return; }
+  if (!emp) { err.textContent = `Enroll ${enroll} not found in the roster.`; err.style.display = 'block'; return; }
 
   const myAssign = assignments.filter(a => a.enroll === enroll && a.date === date);
   if (!myAssign.length) {
-    err.textContent = No tasks assigned to enroll ${enroll} on ${date}. Please check with your manager.;
+    err.textContent = `No tasks assigned to enroll ${enroll} on ${date}. Please check with your manager.`;
     err.style.display = 'block'; return;
   }
 
@@ -859,12 +827,12 @@ function empLogin() {
 
 function showEmpTasks(emp, myAssign, date) {
   const shiftInfo = myAssign[0] ? SHIFT_TIMES[myAssign[0].shift] : {s:'--', e:'--'};
-  const shiftLabel = myAssign[0] ? Shift ${myAssign[0].shift} · ${shiftInfo.s} – ${shiftInfo.e} : '';
+  const shiftLabel = myAssign[0] ? `Shift ${myAssign[0].shift} · ${shiftInfo.s} – ${shiftInfo.e}` : '';
 
   document.getElementById('et-name').textContent = emp.name;
-  document.getElementById('et-meta').textContent = ${date} · ${shiftLabel};
+  document.getElementById('et-meta').textContent = `${date} · ${shiftLabel}`;
   document.getElementById('et-header-name').textContent = emp.name;
-  document.getElementById('et-header-meta').textContent = Enroll: ${emp.id}  ·  ${shiftLabel}  ·  ${myAssign.length} task${myAssign.length !== 1 ? 's' : ''};
+  document.getElementById('et-header-meta').textContent = `Enroll: ${emp.id}  ·  ${shiftLabel}  ·  ${myAssign.length} task${myAssign.length !== 1 ? 's' : ''}`;
 
   const tasksSorted = myAssign
     .map(a => taskMap[a.taskId])
@@ -877,9 +845,9 @@ function showEmpTasks(emp, myAssign, date) {
     const pct = total ? Math.round((done / total) * 100) : 0;
 
     document.getElementById('et-prog').style.width = pct + '%';
-    document.getElementById('et-prog-done').textContent = ${done} of ${total} task${total !== 1 ? 's' : ''} completed;
+    document.getElementById('et-prog-done').textContent = `${done} of ${total} task${total !== 1 ? 's' : ''} completed`;
     document.getElementById('et-prog-pct').textContent = pct + '%';
-    document.getElementById('et-count').textContent = ${done}/${total} done;
+    document.getElementById('et-count').textContent = `${done}/${total} done`;
 
     const shiftStart = shiftInfo.s || '06:00';
     let cursor = shiftStart;
