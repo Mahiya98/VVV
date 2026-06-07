@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMS Production — Task-Based Schedule | AKIJ Ispat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: #e2e0d8;
+    --border2: #ccc9be;
+    --text: #1a1917;
+    --text2: #6b6860;
+    --text3: #9c9a93;
+    --blue: #1a56a0;
+    --blue-light: #e8f0fb;
+    --blue-mid: #3b7dd8;
+    --green: #1f7a4a;
+    --green-light: #e6f5ed;
+    --amber: #8a5a00;
+    --amber-light: #fef3dc;
+    --red: #9b2c2c;
+    --red-light: #fdeaea;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,.10), 0 1px 4px rgba(0,0,0,.06);
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── SCREEN SYSTEM ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── HOME ── */
+  #sc-home {
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    background: var(--bg);
+  }
+  .home-inner { max-width: 480px; width: 100%; }
+  .home-logo {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 2.5rem;
+  }
+  .logo-mark {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--blue); display: flex; align-items: center;
+    justify-content: center; color: #fff; font-size: 18px; font-weight: 600;
+  }
+  .logo-text { line-height: 1.2; }
+  .logo-text strong { display: block; font-size: 15px; font-weight: 600; color: var(--text); }
+  .logo-text span { font-size: 12px; color: var(--text2); }
+  .home-title { font-size: 26px; font-weight: 600; color: var(--text); margin-bottom: 6px; line-height: 1.2; }
+  .home-sub { font-size: 14px; color: var(--text2); margin-bottom: 2rem; }
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .mode-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.25rem 1rem;
+    cursor: pointer; transition: all .18s; text-align: left;
+  }
+  .mode-card:hover { border-color: var(--blue); box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+  .mode-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--blue-light); color: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; margin-bottom: 10px;
+  }
+  .mode-card.emp .mode-icon { background: var(--green-light); color: var(--green); }
+  .mode-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .mode-card p { font-size: 12px; color: var(--text2); line-height: 1.4; }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px; background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-info { flex: 1; }
+  .topbar-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .topbar-sub { font-size: 11px; color: var(--text2); }
+  .back-btn {
+    width: 32px; height: 32px; border-radius: 7px;
+    border: 1px solid var(--border); background: var(--surface2);
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: center; color: var(--text2); font-size: 14px;
+    transition: background .15s;
+  }
+  .back-btn:hover { background: var(--border); }
+
+  /* ── CONTENT WRAPPER ── */
+  .content { flex: 1; padding: 16px; max-width: 900px; width: 100%; margin: 0 auto; }
+
+  /* ── LOGIN ── */
+  .login-wrap {
+    max-width: 340px; margin: 4rem auto; padding: 2rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-lg);
+  }
+  .login-wrap h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .login-wrap .login-sub { font-size: 13px; color: var(--text2); margin-bottom: 1.5rem; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .05em; }
+  .field input, .field select { width: 100%; }
+  input, select, textarea {
+    padding: 9px 12px; font-size: 13px; font-family: var(--font);
+    border: 1px solid var(--border2); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--text);
+    transition: border-color .15s; outline: none;
+  }
+  input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,160,.12); }
+  .err-box {
+    font-size: 12px; color: var(--red); background: var(--red-light);
+    padding: 8px 12px; border-radius: var(--radius-sm); margin-top: 10px;
+    display: none; border-left: 3px solid var(--red);
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 8px 16px; font-size: 13px; font-family: var(--font); font-weight: 500;
+    border: 1px solid var(--border2); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--text);
+    cursor: pointer; transition: all .15s; white-space: nowrap;
+  }
+  .btn:hover { background: var(--surface2); }
+  .btn.solid { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .btn.solid:hover { background: #143f7a; border-color: #143f7a; }
+  .btn.full { width: 100%; padding: 10px; justify-content: center; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+  /* ── STATS ROW ── */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
+  .stat-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+  .stat-val { font-size: 24px; font-weight: 600; color: var(--text); line-height: 1; }
+  .stat-sub { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 16px; gap: 0; }
+  .tab {
+    padding: 9px 16px; font-size: 13px; font-weight: 500; cursor: pointer;
+    color: var(--text2); border: none; background: none;
+    border-bottom: 2px solid transparent; transition: all .15s; font-family: var(--font);
+  }
+  .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+  .tab:hover:not(.active) { color: var(--text); background: var(--surface2); }
+  .mpanel { display: none; }
+  .mpanel.active { display: block; }
+
+  /* ── ASSIGN BAR ── */
+  .assign-bar {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px; margin-bottom: 14px;
+  }
+  .assign-bar .field { margin-bottom: 0; flex: 1; min-width: 140px; }
+
+  /* ── ASSIGN GRID ── */
+  .assign-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .assign-grid { grid-template-columns: 1fr; } }
+  .panel-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px;
+  }
+  .panel-card-title {
+    font-size: 11px; font-weight: 600; color: var(--text2);
+    text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px;
+  }
+  .scroll-box { max-height: 320px; overflow-y: auto; }
+  .search-input { width: 100%; margin-bottom: 8px; }
+
+  /* ── EMPLOYEE ITEMS ── */
+  .emp-item {
+    display: flex; align-items: center; gap: 8px; padding: 7px 8px;
+    border-radius: var(--radius-sm); cursor: pointer;
+    border: 1px solid transparent; transition: all .13s;
+  }
+  .emp-item:hover { background: var(--surface2); }
+  .emp-item.sel { background: var(--blue-light); border-color: #a8c4ea; }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--blue-light); color: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; flex-shrink: 0;
+  }
+  .emp-item.sel .avatar { background: var(--blue); color: #fff; }
+  .emp-name { font-size: 13px; line-height: 1.2; }
+  .emp-id { font-size: 11px; color: var(--text2); font-family: var(--mono); }
+
+  /* ── TASK ITEMS ── */
+  .task-item {
+    display: flex; align-items: flex-start; gap: 8px; padding: 8px;
+    border-radius: var(--radius-sm); cursor: pointer;
+    border: 1px solid transparent; transition: all .13s;
+  }
+  .task-item:hover { background: var(--surface2); }
+  .task-item.sel { background: var(--blue-light); border-color: #a8c4ea; }
+  .chk {
+    width: 16px; height: 16px; border: 1.5px solid var(--border2);
+    border-radius: 4px; flex-shrink: 0; display: flex;
+    align-items: center; justify-content: center; margin-top: 1px;
+    font-size: 10px; transition: all .13s;
+  }
+  .chk.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .task-name-s { font-size: 12px; line-height: 1.4; }
+  .task-meta-s { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-block; font-size: 10px; font-weight: 500;
+    padding: 2px 7px; border-radius: 99px;
+  }
+  .b-h { background: var(--red-light); color: var(--red); }
+  .b-m { background: var(--amber-light); color: var(--amber); }
+  .b-l { background: var(--green-light); color: var(--green); }
+  .b-shift { background: var(--blue-light); color: var(--blue); }
+  .tag { font-size: 10px; padding: 1px 7px; border-radius: 99px; background:var(--surface2); color: var(--text2); display: inline-block; margin: 1px; }
+
+  /* ── ASSIGNMENT TABLE ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    padding: 9px 10px; text-align: left; font-size: 11px; font-weight: 600;
+    color: var(--text2); border-bottom: 1px solid var(--border);
+    text-transform: uppercase; letter-spacing: .06em; background: var(--surface2);
+  }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+  .del-btn {
+    font-size: 11px; padding: 3px 9px; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); background: transparent; color: var(--text2);
+    cursor: pointer; font-family: var(--font); transition: all .13s;
+  }
+  .del-btn:hover { background: var(--red-light); color: var(--red); border-color: var(--red); }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    padding: 2.5rem; text-align: center; font-size: 13px; color: var(--text2);
+    border: 1.5px dashed var(--border); border-radius: var(--radius);
+  }
+  .empty-icon { font-size: 28px; margin-bottom: 8px; opacity: .5; }
+
+  /* ── EMPLOYEE TASK VIEW ── */
+  .emp-header-card {
+    background: linear-gradient(135deg, var(--blue) 0%, #1a3d7a 100%);
+    border-radius: var(--radius); padding: 16px 18px; margin-bottom: 16px; color: #fff;
+  }
+  .emp-header-card .name { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .emp-header-card .meta { font-size: 12px; opacity: .8; margin-bottom: 12px; }
+  .prog-track { background: rgba(255,255,255,.2); border-radius: 99px; height: 6px; overflow: hidden; }
+  .prog-fill { height: 100%; background: #fff; border-radius: 99px; transition: width .4s ease; }
+  .prog-label { display: flex; justify-content: space-between; font-size: 11px; opacity: .8; margin-top: 5px; }
+
+  .task-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px;
+    display: flex; gap: 12px; align-items: flex-start;
+    cursor: pointer; transition: all .18s;
+  }
+  .task-card:hover { border-color: var(--border2); box-shadow: var(--shadow); }
+  .task-card.done { opacity: .55; }
+  .task-card.done:hover { box-shadow: none; }
+  .big-chk {
+    width: 24px; height: 24px; border: 2px solid var(--border2);
+    border-radius: 6px; flex-shrink: 0; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; transition: all .18s;
+  }
+  .big-chk.on { background: var(--green); border-color: var(--green); color: #fff; }
+  .tc-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+  .tc-title.done-text { text-decoration: line-through; color: var(--text2); }
+  .tc-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .time-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-family: var(--mono); font-weight: 500;
+    padding: 3px 9px; border-radius: 99px;
+    background: var(--surface2); color: var(--text2); border: 1px solid var(--border);
+  }
+  .done-label { font-size: 11px; color: var(--green); margin-top: 5px; font-weight: 500; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 20px; right: 20px;
+    background: var(--text); color: #fff; padding: 10px 18px;
+    border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+    box-shadow: var(--shadow-lg); z-index: 9999;
+    transform: translateY(10px); opacity: 0; transition: all .25s;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── FILTER ROW ── */
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .filter-row label { font-size: 12px; color: var(--text2); white-space: nowrap; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HOME
+═══════════════════════════════════════════ -->
+<div class="screen active" id="sc-home">
+  <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:2rem 1.5rem;">
+    <div class="home-inner">
+      <div class="home-logo">
+        <div class="logo-mark">AI</div>
+        <div class="logo-text">
+          <strong>AKIJ Ispat</strong>
+          <span>SMS Production · Task Schedule</span>
+        </div>
+      </div>
+      <h1 class="home-title">Task-based work<br>scheduling system</h1>
+      <p class="home-sub">Managers assign tasks per shift. Employees view their personal checklist by enroll number.</p>
+      <div class="mode-grid">
+        <div class="mode-card" onclick="goManager()">
+          <div class="mode-icon">&#9783;</div>
+          <h3>Manager</h3>
+          <p>Assign tasks to employees for any shift</p>
+        </div>
+        <div class="mode-card emp" onclick="show('sc-emp-login')">
+          <div class="mode-icon">&#9786;</div>
+          <h3>Employee</h3>
+          <p>View your assigned tasks and checklist</p>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:1.5rem;text-align:center;">Demo: manager / 1234 &nbsp;·&nbsp; Employee enroll: 514932, 514934, 514949, 562709, 515194</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MANAGER LOGIN
+═══════════════════════════════════════════ -->
+<div class="screen" id="sc-mgr-login">
+  <div class="topbar">
+    <button class="back-btn" onclick="show('sc-home')">&#8592;</button>
+    <div class="topbar-info">
+      <div class="topbar-title">Manager login</div>
+    </div>
+  </div>
+  <div class="content" style="max-width:400px;">
+    <div class="login-wrap" style="margin-top:3rem;">
+      <h2>Manager access</h2>
+      <p class="login-sub">Sign in to manage task assignments</p>
+      <div class="field"><label>Username</label><input type="text" id="mgr-user" value="manager" /></div>
+      <div class="field"><label>Password</label><input type="password" id="mgr-pass" value="1234" onkeydown="if(event.key==='Enter')managerLogin()" /></div>
+      <div class="err-box" id="mgr-err">Invalid credentials. Use: manager / 1234</div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn solid full" onclick="managerLogin()">Sign in</button>
+        <button class="btn full" onclick="show('sc-home')">Back to home</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MANAGER DASHBOARD
+═══════════════════════════════════════════ -->
+<div class="screen" id="sc-manager">
+  <div class="topbar">
+    <button class="back-btn" onclick="show('sc-home')">&#8592;</button>
+    <div class="topbar-info">
+      <div class="topbar-title">Manager — task assignment</div>
+      <div class="topbar-sub" id="mgr-date-label"></div>
+    </div>
+    <button class="btn" onclick="show('sc-home')" style="font-size:12px;">Sign out</button>
+  </div>
+  <div class="content">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Assignments</div><div class="stat-val" id="st-asgn">0</div><div class="stat-sub">total records</div></div>
+      <div class="stat-card"><div class="stat-label">Employees</div><div class="stat-val" id="st-emp">0</div><div class="stat-sub">assigned today</div></div>
+      <div class="stat-card"><div class="stat-label">Tasks used</div><div class="stat-val" id="st-tasks">0</div><div class="stat-sub">unique tasks</div></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="mgrTab('assign')">Assign tasks</button>
+      <button class="tab" onclick="mgrTab('list')">Assignment list</button>
+    </div>
+
+    <!-- ASSIGN PANEL -->
+    <div class="mpanel active" id="mp-assign">
+      <div class="assign-bar">
+        <div class="field">
+          <label>Shift</label>
+          <select id="m-shift">
+            <option value="A">Shift A &nbsp;·&nbsp; 06:00 – 14:00</option>
+            <option value="B">Shift B &nbsp;·&nbsp; 14:00 – 22:00</option>
+            <option value="C">Shift C &nbsp;·&nbsp; 22:00 – 06:00</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="m-date">
+        </div>
+        <div class="field">
+          <label>Assignment method</label>
+          <select id="m-method" onchange="renderAssignUI()">
+            <option value="manual">Manual — pick employee + tasks</option>
+            <option value="role">By role group</option>
+            <option value="auto">Auto-assign by role match</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="assign-ui"></div>
+
+      <div class="btn-row">
+        <button class="btn solid" onclick="doAssign()">&#10003; Save assignment</button>
+        <button class="btn" onclick="clearSelections()">Clear selection</button>
+      </div>
+      <div class="err-box" id="assign-err" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- LIST PANEL -->
+    <div class="mpanel" id="mp-list">
+      <div class="filter-row">
+        <label>Filter by date:</label>
+        <input type="date" id="list-date-filter" oninput="renderAssignTable()">
+        <label>Shift:</label>
+        <select id="list-shift-filter" onchange="renderAssignTable()">
+          <option value="">All shifts</option>
+          <option value="A">Shift A</option>
+          <option value="B">Shift B</option>
+          <option value="C">Shift C</option>
+        </select>
+        <button class="btn" onclick="document.getElementById('list-date-filter').value='';document.getElementById('list-shift-filter').value='';renderAssignTable()">Clear filter</button>
+      </div>
+      <div class="table-wrap" id="asgn-table-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     EMPLOYEE LOGIN
+═══════════════════════════════════════════ -->
+<div class="screen" id="sc-emp-login">
+  <div class="topbar">
+    <button class="back-btn" onclick="show('sc-home')">&#8592;</button>
+    <div class="topbar-info">
+      <div class="topbar-title">Employee login</div>
+    </div>
+  </div>
+  <div class="content" style="max-width:400px;">
+    <div class="login-wrap" style="margin-top:3rem;">
+      <h2>View my tasks</h2>
+      <p class="login-sub">Enter your enroll number to see today's shift assignments</p>
+      <div class="field"><label>Enroll number</label><input type="number" id="emp-enroll" placeholder="e.g. 514932" onkeydown="if(event.key==='Enter')empLogin()" /></div>
+      <div class="field"><label>Date</label><input type="date" id="emp-date" /></div>
+      <div class="err-box" id="emp-err">No tasks found for this enroll on the selected date.</div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn solid full" onclick="empLogin()">View my tasks</button>
+        <button class="btn full" onclick="show('sc-home')">Back to home</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     EMPLOYEE TASK VIEW
+═══════════════════════════════════════════ -->
+<div class="screen" id="sc-emp-tasks">
+  <div class="topbar">
+    <button class="back-btn" onclick="show('sc-emp-login')">&#8592;</button>
+    <div class="topbar-info">
+      <div class="topbar-title" id="et-name"></div>
+      <div class="topbar-sub" id="et-meta"></div>
+    </div>
+    <div id="et-count" style="font-size:12px;color:var(--text2);white-space:nowrap;"></div>
+  </div>
+  <div class="content">
+    <div class="emp-header-card">
+      <div class="name" id="et-header-name"></div>
+      <div class="meta" id="et-header-meta"></div>
+      <div class="prog-track"><div class="prog-fill" id="et-prog"></div></div>
+      <div class="prog-label">
+        <span id="et-prog-done">0 tasks completed</span>
+        <span id="et-prog-pct">0%</span>
+      </div>
+    </div>
+    <div id="et-task-list"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════ */
+const TASKS = [
+  {id:0, name:"Forma setting", roles:["Lining Technician","Helper"], time:60, prio:"H"},
+  {id:1, name:"Lining — patching / full lining", roles:["Lining Mason","Lining Technician","Helper"], time:60, prio:"H"},
+  {id:2, name:"Joltering / lining vibration", roles:["Lining Technician","Helper"], time:120, prio:"H"},
+  {id:3, name:"Top preparation", roles:["Lining Mason","Lining Technician","Helper"], time:60, prio:"M"},
+  {id:4, name:"Scrap grabbing into vibrator charger", roles:["Crane Operator (support)","Crane Operator (charging & ladle)"], time:45, prio:"M"},
+  {id:5, name:"Scrap charging by vibrator", roles:["Operator (First hand)"], time:125, prio:"H"},
+  {id:6, name:"Scrap melting", roles:["Asst. operator","Helper"], time:136, prio:"H"},
+  {id:7, name:"Ladle wall & bottom breaking", roles:["Ladle Mason","Helper"], time:240, prio:"M"},
+  {id:8, name:"Ladle brick lining", roles:["Ladle Mason","Helper"], time:2880, prio:"H"},
+  {id:9, name:"Ladle powder mixing", roles:["Ladle Mason","Helper"], time:210, prio:"M"},
+  {id:10, name:"Ladle former setting", roles:["Ladle Mason","Helper"], time:90, prio:"M"},
+  {id:11, name:"Ladle patching by quartz powder", roles:["Ladle Mason","Helper"], time:420, prio:"H"},
+  {id:12, name:"Ladle patching maintenance (quartz & castable)", roles:["Ladle Mason","Helper"], time:220, prio:"M"},
+  {id:13, name:"Ladle slide gate fitting (per 6 heat)", roles:["Operator (slide gate)","Helper"], time:50, prio:"H"},
+  {id:14, name:"Slide gate operation", roles:["Operator (slide gate)","Helper"], time:65, prio:"H"},
+  {id:15, name:"Tundish lining breaking", roles:["Tundish Mason","Helper"], time:120, prio:"M"},
+  {id:16, name:"Tundish brick breaking", roles:["Tundish Mason","Helper"], time:440, prio:"M"},
+  {id:17, name:"Tundish board pre-check", roles:["Tundish Mason","Helper"], time:20, prio:"M"},
+  {id:18, name:"Tundish sand heating", roles:["Tundish Mason","Helper"], time:240, prio:"H"},
+  {id:19, name:"Tundish powder mixing", roles:["Tundish Mason","Helper"], time:120, prio:"M"},
+  {id:20, name:"Tundish former setting", roles:["Tundish Mason","Helper"], time:30, prio:"M"},
+  {id:21, name:"Tundish patching by quartz powder", roles:["Tundish Mason","Helper"], time:240, prio:"H"},
+  {id:22, name:"Tundish patching maintenance (quartz & castable)", roles:["Tundish Mason","Helper"], time:240, prio:"M"},
+  {id:23, name:"Tundish cleaning after casting", roles:["Tundish Mason","Helper"], time:60, prio:"L"},
+  {id:24, name:"Primary & secondary water adjustment", roles:["Operator (Mould)"], time:30, prio:"H"},
+  {id:25, name:"Hot billet cutting", roles:["Welder (Cutterman)"], time:48, prio:"H"},
+  {id:26, name:"Billet transfer to billet yard", roles:["Operator (desk)","Crane Operator (support)"], time:45, prio:"M"},
+  {id:27, name:"Slag transfer", roles:["Crane Operator (support)","Helper"], time:360, prio:"L"},
+  {id:28, name:"Bag collection from APC", roles:["Helper"], time:22, prio:"L"},
+];
+
+const EMPLOYEES = [
+  {id:562709,name:"Md. Golam Mortoza"},{id:565096,name:"Md Raju Ahammed"},{id:514932,name:"Mohammed Mizanur Rahaman"},{id:514949,name:"Md. Innosh Mia"},{id:514934,name:"Md. Harun Or Rashid"},{id:515194,name:"Md. Jahangir Hossain"},{id:561634,name:"Md. Abdul Ali"},{id:515193,name:"Mr. Choton Sen"},{id:515200,name:"Md. Samim"},{id:562345,name:"Md. Shafikul Islam"},{id:515195,name:"Md. Shamim"},{id:563658,name:"Md Nuron Nabe Islam"},{id:514916,name:"Md. Nure Alam"},{id:515198,name:"Md. Israfil Hossain"},{id:515199,name:"Md. Nasiruddin Dewan"},{id:515196,name:"Md. Kawsar Ahmed"},{id:514915,name:"Md. Al Amin"},{id:561841,name:"Md. Shariful Islam"},{id:564424,name:"Md Seyam"},{id:563656,name:"Md Zayed Biswas"},{id:565514,name:"Md Somrat Hosen"},{id:563659,name:"Khairul Islam"},{id:564284,name:"Md Farhan Hossain Biddyut"},{id:564889,name:"Md Nayem Mia"},{id:565515,name:"Foyez Ullah"},{id:564888,name:"Sourov Debnath"},{id:514918,name:"Shah Alam"},{id:565516,name:"Sheik Jehadul Karim"},{id:514919,name:"Kamal Hossain"},{id:514936,name:"Md. Nur Uddin"},{id:514943,name:"Md.Jahangir Alam"},{id:563657,name:"Md Rabbi Hossen"},{id:564695,name:"Biplob Biswas"},{id:514921,name:"Md. Salim Mia"},{id:514926,name:"Md. Zakir Hossain"},{id:514940,name:"Md. Moazzem Hossain"},{id:514924,name:"Md. Ekramul Haque"},{id:557976,name:"Md Ibraimm Bhuiyan"},{id:514920,name:"Md. Abul Hashem"},{id:559967,name:"Saiful Islam"},{id:515190,name:"Md. Abu Bakker"},{id:515167,name:"Md. Abu Sufian"},{id:557942,name:"Md. Manik Mia"},{id:557824,name:"Md Ziaul Haque"},{id:514935,name:"Md. Al-Amin Khan"},{id:515165,name:"Md. Munna Hossain"},{id:515161,name:"Md. Aslam"},{id:557960,name:"Md Mamun Sarkar"},{id:562105,name:"Md. Ashikur Rahaman"},{id:564694,name:"Bichitro Bosu"},{id:514463,name:"Md. Jakaria"},{id:515160,name:"Md. Nazrul Islam"},{id:558406,name:"Md. Bashir Uddin"},{id:514781,name:"Md.Shahriar Hossain Shemul"},{id:560431,name:"Md. Main Uddin"},{id:514782,name:"Md. Rafiqul Islam"},{id:514738,name:"Md. Nazrul Islam"},{id:514390,name:"Md. Johirul Islam"},{id:514742,name:"Mr. Mithun Halder"},{id:514745,name:"Md. Romjan Mia"},{id:514740,name:"Md. Sohag"},{id:514784,name:"Md. Sapon Mia"},{id:514743,name:"Md. Abdul Ahad"},{id:514744,name:"Md. Main Uddin"},{id:514739,name:"Md. Airfanul Karim"},{id:514747,name:"Md. Shariful Islam (Ratul)"},{id:514785,name:"Md. Nayan Mia"},{id:514371,name:"Md. Rashel Fakir"},{id:514363,name:"Md.Tofayel Ahammed"},{id:514403,name:"Md. Arman Dewan"},{id:514402,name:"Md Nurul Islam"},{id:514387,name:"Md.Masud Alam"},{id:514420,name:"Md. Hridoy Hossain"},{id:514385,name:"Md.Abu Bakkar Khan"},{id:514369,name:"Md.Rakib Sarker"},{id:514373,name:"Md.Ramzan Miah"},{id:514378,name:"Md.Abu Kalam"},{id:514366,name:"Md.Imran Khan"},{id:514377,name:"Md.Bayezid Khan"},{id:514786,name:"Abdul Latif Miah"},{id:514787,name:"Md.Omar Faruqe"},{id:514790,name:"Md. Biplop Khan"},{id:514821,name:"Rubel Howlader"},{id:514822,name:"Md. Shamim Islam"},{id:514931,name:"Hannan Sharif"},{id:514930,name:"Md. Mannan"},{id:514951,name:"Md. Ibrahim Dewan"},{id:514939,name:"Md. Nesar Uddin Prodhan"},{id:514922,name:"Zuel Miah"},{id:514820,name:"Md. Salauddin"},{id:514912,name:"Abdur Rahman"},{id:514823,name:"Hazrat Ali"},{id:514791,name:"Ataur Rahaman"},{id:514938,name:"Md. Forhad"},{id:514929,name:"Md. Jahangeer Alam"},{id:514923,name:"Md. Khursed Alam"},{id:514927,name:"Md. Naeem Bagh"},{id:514908,name:"Foysal Ahmed"},{id:514950,name:"Md. Mojammel Haq"},{id:514956,name:"Md. Mostafa Kamal"},{id:514905,name:"Md. Ripon"},{id:514958,name:"Md. Deloar"},{id:514959,name:"Jasim Uddin Khan"},{id:514954,name:"Md. Mafizul Islam"},{id:514963,name:"Masud Rana"},{id:514961,name:"Md. Habibur Rahman"},{id:514952,name:"Md. Ramzan Ali Bhuiyan"},{id:514907,name:"Md. Nurul Islam"},{id:514361,name:"Md. Alamgir Hossain"},{id:514406,name:"Al Amin"},{id:514446,name:"Md. Mortuza Ali"},{id:514462,name:"Solaman Dewan"},{id:514466,name:"Shatadal Mazumder"},{id:514469,name:"Md. Harun Ar Rashid Masud"},{id:514376,name:"Md. Amith Hasan"},{id:514428,name:"Md. Rezaul Karim"},{id:514425,name:"Md. Robiul"},{id:514394,name:"Md. Kawsar Hossain"},{id:514423,name:"Md. Kawsar Hossain"},{id:514429,name:"Md. Mosharof Hossain"},{id:514947,name:"Md. Saiful Islam"},{id:514426,name:"Md. Roni"},{id:514432,name:"Md. Al-Amin"},{id:514414,name:"Md. Shohag Miah"},{id:514412,name:"Sree Duranto Chandra Ray"},{id:514643,name:"Md. Nur Islam"},{id:514360,name:"Md. Amir Khan Risan"},{id:514475,name:"Md. Amir Hussen"},{id:514548,name:"Md. Zakir Hossain Howladar"},{id:514568,name:"Md. Abdul Malek"},{id:514571,name:"Mr. Raton Kumar Modok"},{id:514587,name:"Md. Awlad Hossain"},{id:514593,name:"Tushar Ronjon Sarker"},{id:514482,name:"Md. Jahir Kha"},{id:514508,name:"Jamal Miah"},{id:514519,name:"Meraj Dewan"},{id:514522,name:"Md: Riad Hossain"},{id:514470,name:"Md. Ibrahim"},{id:514496,name:"Md. Momijul Islam"},{id:514474,name:"Md. Nasiruddin Fakir"},{id:514479,name:"Mr. Nironjon"},{id:514545,name:"Md. Sheakh Abdullah"},{id:514521,name:"Mamun Mia"},{id:514609,name:"Iman Hossain"},{id:514502,name:"Md. Moynul Hoque"},{id:514481,name:"Md. Asadul Islam"},{id:514547,name:"Md. Parvaz"},{id:514617,name:"Biplop Chowdhury"},{id:514618,name:"Md. Alamgir Hosen"},{id:514570,name:"Md. Quazi Mainuddin"},{id:514600,name:"Md. Riaz Uddin"},{id:514604,name:"S.M Abdul Kader Jilani"},{id:514602,name:"Md. Abu Taher Sarker"},{id:514592,name:"Mr. Sovo Barua"},{id:514625,name:"Md. Golam Rabbani"},{id:514611,name:"Md. Ismil Hossain"},{id:514624,name:"Md. Faruk"},{id:514627,name:"Md. Shamim Mia"},{id:514517,name:"Md. Munsur Ali Raj"},{id:514370,name:"Md. Nur Kasem"},{id:514451,name:"Md. Bilal Hossain Miazy"},{id:514608,name:"Md. Sharif Prodhania"},{id:514626,name:"Md.Tapan Uddin"},{id:514619,name:"Md. Jony Biswas"},{id:514635,name:"Md. Anowar Hossain"},{id:514539,name:"Md. Sadikul Islam"},{id:514551,name:"Md. Shohag Shamim"},{id:514532,name:"Md. Tarek"},{id:514607,name:"Md. Rashel"},{id:514582,name:"Ashik Shaikh"},{id:514622,name:"Md. Mizan"},{id:514629,name:"Md. Obaydul Talukdar"},{id:514560,name:"Md. Salauddin"},{id:514564,name:"Md. Atowar Rahman Mondol"},{id:514490,name:"Md. Kabir Hossain"},{id:514419,name:"Sajol Chandra Gosh"},{id:514422,name:"Md. Abdur Rahaman"},{id:514497,name:"Md. Abul Kalam Azad"},{id:514536,name:"Md.Forhad uddin"},{id:514540,name:"Md.Harun mia"},
+];
+
+const ROLE_LIST = [...new Set(TASKS.flatMap(t => t.roles))].sort();
+const SHIFT_TIMES = { A:{s:"06:00",e:"14:00"}, B:{s:"14:00",e:"22:00"}, C:{s:"22:00",e:"06:00"} };
+
+const empMap = {}; EMPLOYEES.forEach(e => empMap[e.id] = e);
+const taskMap = {}; TASKS.forEach(t => taskMap[t.id] = t);
+
+let assignments = [];
+let selEmps = new Set();
+let selTasks = new Set();
+let activeRole = ROLE_LIST[0];
+let empCompleted = new Set();
+
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+function today() { return new Date().toISOString().split('T')[0]; }
+function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function fmt(min) { return min >= 60 ? ${Math.floor(min/60)}h${min%60 ? ` ${min%60}m : ''}` : min + 'm'; }
+function initials(n) { return n.split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase(); }
+function addTime(base, mins) {
+  const [h, m] = base.split(':').map(Number);
+  const tot = h * 60 + m + mins;
+  return ${String(Math.floor(tot/60) % 24).padStart(2,'0')}:${String(tot % 60).padStart(2,'0')};
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+document.getElementById('m-date').value = today();
+document.getElementById('emp-date').value = today();
+document.getElementById('list-date-filter').value = today();
+document.getElementById('mgr-date-label').textContent = new Date().toLocaleDateString('en-GB', {weekday:'long', day:'2-digit', month:'short', year:'numeric'});
+
+/* ═══════════════════════════════════════════
+   DEMO SEED
+═══════════════════════════════════════════ */
+(function seedDemo() {
+  const d = today();
+  [{enroll:514932, tasks:[0,1,2], shift:'A'},
+   {enroll:514934, tasks:[5,6], shift:'A'},
+   {enroll:514949, tasks:[7,9,10,11], shift:'B'},
+   {enroll:562709, tasks:[13,14], shift:'A'},
+   {enroll:515194, tasks:[18,21,23], shift:'C'}
+  ].forEach(p => p.tasks.forEach(tid => assignments.push({enroll:p.enroll, taskId:tid, shift:p.shift, date:d})));
+  updateStats();
+})();
+
+/* ═══════════════════════════════════════════
+   MANAGER
+═══════════════════════════════════════════ */
+function goManager() { show('sc-mgr-login'); }
+
+function managerLogin() {
+  const u = document.getElementById('mgr-user').value.trim();
+  const p = document.getElementById('mgr-pass').value.trim();
+  const err = document.getElementById('mgr-err');
+  if (u === 'manager' && p === '1234') {
+    err.style.display = 'none';
+    show('sc-manager');
+    mgrTab('assign');
+    renderAssignUI();
+    updateStats();
+  } else {
+    err.style.display = 'block';
+  }
+}
+
+function mgrTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ['assign','list'][i] === name));
+  document.querySelectorAll('.mpanel').forEach(p => p.classList.remove('active'));
+  document.getElementById('mp-' + name).classList.add('active');
+  if (name === 'list') renderAssignTable();
+}
+
+function renderAssignUI() {
+  const method = document.getElementById('m-method').value;
+  const ui = document.getElementById('assign-ui');
+
+  if (method === 'manual') {
+    ui.innerHTML = `<div class="assign-grid">
+      <div class="panel-card">
+        <div class="panel-card-title">Select employee</div>
+        <input class="search-input" placeholder="Search name or enroll number..." oninput="renderEmpList(this.value)">
+        <div class="scroll-box" id="emp-sel-list"></div>
+      </div>
+      <div class="panel-card">
+        <div class="panel-card-title">Select tasks</div>
+        <input class="search-input" placeholder="Search task name or role..." oninput="renderTaskList(this.value)">
+        <div class="scroll-box" id="task-sel-list"></div>
+      </div>
+    </div>`;
+    renderEmpList(''); renderTaskList('');
+
+  } else if (method === 'role') {
+    const opts = ROLE_LIST.map(r => <option value="${r}">${r}</option>).join('');
+    ui.innerHTML = `<div class="assign-grid">
+      <div class="panel-card">
+        <div class="panel-card-title">Select role group</div>
+        <select style="width:100%;margin-bottom:10px" onchange="roleGroupChange(this.value)">${opts}</select>
+        <div class="panel-card-title" style="margin-bottom:6px">Employees to assign</div>
+        <div class="scroll-box" id="role-emp-list"></div>
+      </div>
+      <div class="panel-card">
+        <div class="panel-card-title">Tasks for this role</div>
+        <div class="scroll-box" id="role-task-list"></div>
+      </div>
+    </div>`;
+    roleGroupChange(ROLE_LIST[0]);
+
+  } else {
+    ui.innerHTML = `<div class="panel-card" style="max-width:500px">
+      <div class="panel-card-title">Auto-assign settings</div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;">All tasks matching the selected role will be assigned to the first 10 employees in the roster for the chosen shift and date.</p>
+      <div class="field"><label>Target role</label>
+        <select id="auto-role" style="width:100%">${ROLE_LIST.map(r=><option value="${r}">${r}</option>).join('')}</select>
+      </div>
+    </div>`;
+  }
+}
+
+function renderEmpList(q) {
+  const el = document.getElementById('emp-sel-list'); if (!el) return;
+  const f = EMPLOYEES.filter(e => !q || e.name.toLowerCase().includes(q.toLowerCase()) || String(e.id).includes(q));
+  el.innerHTML = f.slice(0, 80).map(e => `
+    <div class="emp-item${selEmps.has(e.id) ? ' sel' : ''}" onclick="toggleEmp(${e.id})">
+      <div class="avatar">${initials(e.name)}</div>
+      <div><div class="emp-name">${e.name}</div><div class="emp-id">${e.id}</div></div>
+    </div>`).join('');
+}
+
+function renderTaskList(q) {
+  const el = document.getElementById('task-sel-list'); if (!el) return;
+  const f = TASKS.filter(t => !q || t.name.toLowerCase().includes(q.toLowerCase()) || t.roles.some(r => r.toLowerCase().includes(q.toLowerCase())));
+  el.innerHTML = f.map(t => {
+    const pc = t.prio === 'H' ? 'b-h' : t.prio === 'M' ? 'b-m' : 'b-l';
+    const pl = t.prio === 'H' ? 'High' : t.prio === 'M' ? 'Med' : 'Low';
+    return `<div class="task-item${selTasks.has(t.id) ? ' sel' : ''}" onclick="toggleTaskSel(${t.id})">
+      <div class="chk${selTasks.has(t.id) ? ' on' : ''}">${selTasks.has(t.id) ? '&#10003;' : ''}</div>
+      <div>
+        <div class="task-name-s">${t.name}</div>
+        <div class="task-meta-s"><span class="badge ${pc}" style="margin-right:4px">${pl}</span>${fmt(t.time)} &nbsp;&middot;&nbsp; ${t.roles[0]}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function roleGroupChange(role) {
+  activeRole = role;
+  const empEl = document.getElementById('role-emp-list');
+  const taskEl = document.getElementById('role-task-list');
+  if (empEl) {
+    empEl.innerHTML = EMPLOYEES.slice(0, 30).map(e => `
+      <div class="emp-item${selEmps.has(e.id) ? ' sel' : ''}" onclick="toggleEmp(${e.id});roleGroupChange('${role}')">
+        <div class="avatar">${initials(e.name)}</div>
+        <div><div class="emp-name">${e.name}</div><div class="emp-id">${e.id}</div></div>
+      </div>`).join('');
+  }
+  if (taskEl) {
+    const roleTasks = TASKS.filter(t => t.roles.includes(role));
+    taskEl.innerHTML = roleTasks.map(t => {
+      const pc = t.prio === 'H' ? 'b-h' : t.prio === 'M' ? 'b-m' : 'b-l';
+      return `<div class="task-item${selTasks.has(t.id) ? ' sel' : ''}" onclick="toggleTaskSel(${t.id});roleGroupChange('${role}')">
+        <div class="chk${selTasks.has(t.id) ? ' on' : ''}">${selTasks.has(t.id) ? '&#10003;' : ''}</div>
+        <div>
+          <div class="task-name-s">${t.name}</div>
+          <div class="task-meta-s"><span class="badge ${pc}" style="margin-right:4px">${t.prio==='H'?'High':t.prio==='M'?'Med':'Low'}</span>${fmt(t.time)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function toggleEmp(id) { if (selEmps.has(id)) selEmps.delete(id); else selEmps.add(id); renderEmpList(''); }
+function toggleTaskSel(id) { if (selTasks.has(id)) selTasks.delete(id); else selTasks.add(id); renderTaskList(''); }
+
+function doAssign() {
+  const err = document.getElementById('assign-err');
+  const method = document.getElementById('m-method').value;
+  const shift = document.getElementById('m-shift').value;
+  const date = document.getElementById('m-date').value;
+  err.style.display = 'none';
+
+  if (method === 'auto') {
+    const role = document.getElementById('auto-role').value;
+    const roleTasks = TASKS.filter(t => t.roles.includes(role));
+    if (!roleTasks.length) { err.textContent = 'No tasks found for this role.'; err.style.display = 'block'; return; }
+    let count = 0;
+    EMPLOYEES.slice(0, 10).forEach(emp => {
+      roleTasks.forEach(task => {
+        if (!assignments.find(a => a.enroll === emp.id && a.taskId === task.id && a.date === date && a.shift === shift)) {
+          assignments.push({enroll: emp.id, taskId: task.id, shift, date});
+          count++;
+        }
+ });
+    });
+    showToast(Auto-assigned ${count} records for role: ${role});
+  } else {
+    if (!selEmps.size) { err.textContent = 'Please select at least one employee.'; err.style.display = 'block'; return; }
+    if (!selTasks.size) { err.textContent = 'Please select at least one task.'; err.style.display = 'block'; return; }
+    let count = 0;
+    selEmps.forEach(eid => {
+      selTasks.forEach(tid => {
+        if (!assignments.find(a => a.enroll === eid && a.taskId === tid && a.date === date && a.shift === shift)) {
+          assignments.push({enroll: eid, taskId: tid, shift, date});
+          count++;
+        }
+      });
+    });
+    showToast(${count} assignment${count !== 1 ? 's' : ''} saved successfully);
+  }
+
+  updateStats();
+  selEmps.clear(); selTasks.clear();
+  renderAssignUI();
+}
+
+function clearSelections() { selEmps.clear(); selTasks.clear(); renderAssignUI(); }
+
+function updateStats() {
+  document.getElementById('st-asgn').textContent = assignments.length;
+  document.getElementById('st-emp').textContent = new Set(assignments.map(a => a.enroll)).size;
+  document.getElementById('st-tasks').textContent = new Set(assignments.map(a => a.taskId)).size;
+}
+
+function renderAssignTable() {
+  const wrap = document.getElementById('asgn-table-wrap');
+  const dateF = document.getElementById('list-date-filter').value;
+  const shiftF = document.getElementById('list-shift-filter').value;
+
+  const filtered = assignments.filter(a => (!dateF || a.date === dateF) && (!shiftF || a.shift === shiftF));
+
+  if (!filtered.length) {
+    wrap.innerHTML = '<div class="empty"><div class="empty-icon">&#9741;</div>No assignments found for the selected filters.</div>';
+    return;
+  }
+
+  const byKey = {};
+  assignments.forEach((a, i) => {
+    if ((!dateF || a.date === dateF) && (!shiftF || a.shift === shiftF)) {
+      const key = ${a.enroll}__${a.date}__${a.shift};
+      if (!byKey[key]) byKey[key] = {enroll: a.enroll, date: a.date, shift: a.shift, tasks: [], idxs: []};
+      byKey[key].tasks.push(a.taskId);
+      byKey[key].idxs.push(i);
+    }
+  });
+
+  let html = `<table>
+    <thead><tr>
+      <th style="width:28%">Employee</th>
+      <th style="width:10%">Date</th>
+      <th style="width:10%">Shift</th>
+      <th>Assigned tasks</th>
+      <th style="width:70px"></th>
+    </tr></thead><tbody>`;
+
+  Object.values(byKey).forEach(row => {
+    const emp = empMap[row.enroll] || {name: 'Unknown', id: row.enroll};
+    const taskTags = row.tasks.map(tid => taskMap[tid] ? <span class="tag">${taskMap[tid].name}</span> : '').join('');
+    html += `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="avatar" style="width:26px;height:26px;font-size:10px">${initials(emp.name)}</div>
+          <div><div style="font-size:13px;font-weight:500">${emp.name}</div><div style="font-size:11px;color:var(--text2);font-family:var(--mono)">${row.enroll}</div></div>
+        </div>
+      </td>
+      <td style="font-size:12px">${row.date}</td>
+      <td><span class="badge b-shift">Shift ${row.shift}</span></td><td>${taskTags}</td>
+      <td><button class="del-btn" onclick="deleteGroup(${JSON.stringify(row.idxs)})">Remove</button></td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function deleteGroup(idxs) {
+  [...idxs].sort((a, b) => b - a).forEach(i => assignments.splice(i, 1));
+  updateStats();
+  renderAssignTable();
+  showToast('Assignment removed');
+}
+
+/* ═══════════════════════════════════════════
+   EMPLOYEE
+═══════════════════════════════════════════ */
+function empLogin() {
+  const enroll = parseInt(document.getElementById('emp-enroll').value);
+  const date = document.getElementById('emp-date').value;
+  const err = document.getElementById('emp-err');
+  err.style.display = 'none';
+
+  const emp = empMap[enroll];
+  if (!emp) { err.textContent = Enroll ${enroll} not found in the roster.; err.style.display = 'block'; return; }
+
+  const myAssign = assignments.filter(a => a.enroll === enroll && a.date === date);
+  if (!myAssign.length) {
+    err.textContent = No tasks assigned to enroll ${enroll} on ${date}. Please check with your manager.;
+    err.style.display = 'block'; return;
+  }
+
+  empCompleted = new Set();
+  showEmpTasks(emp, myAssign, date);
+}
+
+function showEmpTasks(emp, myAssign, date) {
+  const shiftInfo = myAssign[0] ? SHIFT_TIMES[myAssign[0].shift] : {s:'--', e:'--'};
+  const shiftLabel = myAssign[0] ? Shift ${myAssign[0].shift} · ${shiftInfo.s} – ${shiftInfo.e} : '';
+
+  document.getElementById('et-name').textContent = emp.name;
+  document.getElementById('et-meta').textContent = ${date} · ${shiftLabel};
+  document.getElementById('et-header-name').textContent = emp.name;
+  document.getElementById('et-header-meta').textContent = Enroll: ${emp.id}  ·  ${shiftLabel}  ·  ${myAssign.length} task${myAssign.length !== 1 ? 's' : ''};
+
+  const tasksSorted = myAssign
+    .map(a => taskMap[a.taskId])
+    .filter(Boolean)
+    .sort((a, b) => ({ H:0, M:1, L:2 })[a.prio] - ({ H:0, M:1, L:2 })[b.prio]);
+
+  function renderEmpTasks() {
+    const done = empCompleted.size;
+    const total = tasksSorted.length;
+    const pct = total ? Math.round((done / total) * 100) : 0;
+
+    document.getElementById('et-prog').style.width = pct + '%';
+    document.getElementById('et-prog-done').textContent = ${done} of ${total} task${total !== 1 ? 's' : ''} completed;
+    document.getElementById('et-prog-pct').textContent = pct + '%';
+    document.getElementById('et-count').textContent = ${done}/${total} done;
+
+    const shiftStart = shiftInfo.s || '06:00';
+    let cursor = shiftStart;
+
+    document.getElementById('et-task-list').innerHTML = tasksSorted.map(t => {
+      const start = cursor;
+      const end = addTime(cursor, t.time);
+      cursor = end;
+      const isDone = empCompleted.has(t.id);
+      const pc = t.prio === 'H' ? 'b-h' : t.prio === 'M' ? 'b-m' : 'b-l';
+      const pl = t.prio === 'H' ? 'High priority' : t.prio === 'M' ? 'Medium priority' : 'Low priority';
+      return `<div class="task-card${isDone ? ' done' : ''}" onclick="toggleEmpDone(${t.id})">
+        <div class="big-chk${isDone ? ' on' : ''}">${isDone ? '&#10003;' : ''}</div>
+        <div style="flex:1">
+          <div class="tc-title${isDone ? ' done-text' : ''}">${t.name}</div>
+          <div class="tc-meta">
+            <span class="time-pill">&#9679; ${start} &rarr; ${end}</span>
+            <span class="badge ${pc}">${pl}</span>
+            <span style="font-size:11px;color:var(--text2)">${fmt(t.time)}</span>
+          </div>
+          ${isDone ? '<div class="done-label">&#10003; Completed</div>' : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  window._empRender = renderEmpTasks;
+  renderEmpTasks();
+  show('sc-emp-tasks');
+}
+
+function toggleEmpDone(id) {
+  if (empCompleted.has(id)) empCompleted.delete(id); else empCompleted.add(id);
+  if (window._empRender) window._empRender();
+}
+</script>
+</body>
+</html>
