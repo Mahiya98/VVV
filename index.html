@@ -17,6 +17,7 @@
     --amber: #8a5a00; --amber-light: #fef3dc;
     --red: #9b2c2c; --red-light: #fdeaea;
     --purple: #6b3ea0; --purple-light: #efe8fb;
+    --teal: #0e7490; --teal-light: #e0f5f9;
     --radius: 10px; --radius-sm: 6px;
     --shadow: 0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
     --shadow-lg: 0 4px 16px rgba(0,0,0,.10), 0 1px 4px rgba(0,0,0,.06);
@@ -72,12 +73,39 @@
   .btn.green { background: var(--green); color: #fff; border-color: var(--green); }
   .btn.green:hover { background: #15613a; border-color: #15613a; }
   .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
-  @media (max-width: 640px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+
+  /* ── STATS ROW: now 6 cards ── */
+  .stats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 16px; }
+  @media (max-width: 900px) { .stats-row { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 560px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
+  .stat-card.engaged { border-left: 3px solid var(--amber); }
+  .stat-card.free { border-left: 3px solid var(--green); }
   .stat-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
   .stat-val { font-size: 22px; font-weight: 600; color: var(--text); line-height: 1; }
   .stat-sub { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+  /* ── WORKFORCE BAND ── */
+  .workforce-band { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; }
+  .wf-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+  .wf-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+  .wf-legend { display: flex; gap: 14px; }
+  .wf-leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); }
+  .wf-leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .wf-bar-track { height: 12px; border-radius: 99px; background: var(--green-light); overflow: hidden; border: 1px solid rgba(0,0,0,.05); }
+  .wf-bar-fill { height: 100%; background: linear-gradient(90deg, var(--amber) 0%, #c47a00 100%); border-radius: 99px; transition: width .5s cubic-bezier(.34,1.56,.64,1); }
+  .wf-counts { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; }
+  .wf-count-engaged { color: var(--amber); font-weight: 600; }
+  .wf-count-free { color: var(--green); font-weight: 600; }
+
+  /* ── ROLE BREAKDOWN ── */
+  .role-breakdown { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+  .role-row { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: var(--surface2); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  .role-row-name { font-size: 12px; font-weight: 500; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .role-row-bar { width: 60px; height: 6px; border-radius: 99px; background: var(--border); overflow: hidden; flex-shrink: 0; }
+  .role-row-fill { height: 100%; background: var(--amber); border-radius: 99px; transition: width .4s ease; }
+  .role-row-nums { font-size: 11px; font-family: var(--mono); color: var(--text2); white-space: nowrap; }
+
   .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 16px; gap: 0; }
   .tab { padding: 9px 16px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text2); border: none; background: none; border-bottom: 2px solid transparent; transition: all .15s; font-family: var(--font); }
   .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
@@ -93,7 +121,6 @@
   .scroll-box { max-height: 360px; overflow-y: auto; }
   .search-input { width: 100%; margin-bottom: 8px; }
   .role-filter { width: 100%; margin-bottom: 8px; }
-  /* NEW: active role chip shown above task panel */
   .active-role-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; background: var(--purple-light); color: var(--purple); font-size: 11px; font-weight: 500; }
   .active-role-chip .x { cursor: pointer; font-weight: 700; opacity: .7; padding: 0 2px; }
   .active-role-chip .x:hover { opacity: 1; }
@@ -106,6 +133,12 @@
   .emp-name { font-size: 13px; line-height: 1.3; font-weight: 500; }
   .emp-id { font-size: 11px; color: var(--text2); font-family: var(--mono); margin-top: 1px; line-height: 1.3; }
   .emp-role-badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 1px 7px; border-radius: 99px; background: var(--purple-light); color: var(--purple); margin-left: 4px; }
+
+  /* ── dot indicator on employee items ── */
+  .eng-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-left: auto; }
+  .eng-dot.engaged { background: var(--amber); }
+  .eng-dot.free { background: var(--green); }
+
   .task-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px; border-radius: var(--radius-sm); cursor: pointer; border: 1px solid transparent; transition: all .13s; }
   .task-item:hover { background: var(--surface2); }
   .task-item.sel { background: var(--blue-light); border-color: #a8c4ea; }
@@ -121,6 +154,8 @@
   .b-shift { background: var(--blue-light); color: var(--blue); }
   .b-done { background: var(--green-light); color: var(--green); }
   .b-role { background: var(--purple-light); color: var(--purple); }
+  .b-engaged { background: var(--amber-light); color: var(--amber); font-size: 10px; padding: 1px 6px; border-radius: 99px; }
+  .b-free { background: var(--green-light); color: var(--green); font-size: 10px; padding: 1px 6px; border-radius: 99px; }
   .tag { font-size: 10px; padding: 1px 7px; border-radius: 99px; background:var(--surface2); color: var(--text2); display: inline-block; margin: 1px; }
   .table-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -264,28 +299,33 @@
     <button class="btn" onclick="show('sc-home')" style="font-size:12px;">Sign out</button>
   </div>
   <div class="content">
+    <!-- STATS: 6 cards — Roster, Tasks, Assignments, Completed, Engaged, Free -->
     <div class="stats-row">
       <div class="stat-card"><div class="stat-label">Roster</div><div class="stat-val" id="st-roster">0</div><div class="stat-sub">employees</div></div>
       <div class="stat-card"><div class="stat-label">Tasks</div><div class="stat-val" id="st-tasks">0</div><div class="stat-sub">from sheet</div></div>
       <div class="stat-card"><div class="stat-label">Assignments</div><div class="stat-val" id="st-asgn">0</div><div class="stat-sub">total records</div></div>
       <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-val" id="st-completed">0</div><div class="stat-sub">submissions</div></div>
+      <div class="stat-card engaged"><div class="stat-label">Engaged</div><div class="stat-val" id="st-engaged" style="color:var(--amber)">0</div><div class="stat-sub" id="st-engaged-sub">today · all shifts</div></div>
+      <div class="stat-card free"><div class="stat-label">Free</div><div class="stat-val" id="st-free" style="color:var(--green)">0</div><div class="stat-sub" id="st-free-sub">unassigned today</div></div>
     </div>
+
     <div class="tabs">
       <button class="tab active" onclick="mgrTab('assign')">Assign tasks</button>
       <button class="tab" onclick="mgrTab('list')">Assignment list</button>
       <button class="tab" onclick="mgrTab('completed')">Completed ✓</button>
     </div>
+
     <div class="mpanel active" id="mp-assign">
       <div class="assign-bar">
         <div class="field">
           <label>Shift</label>
-          <select id="m-shift">
+          <select id="m-shift" onchange="renderWorkforceBand()">
             <option value="A">Shift A &nbsp;·&nbsp; 06:00 – 14:00</option>
             <option value="B">Shift B &nbsp;·&nbsp; 14:00 – 22:00</option>
             <option value="C">Shift C &nbsp;·&nbsp; 22:00 – 06:00</option>
           </select>
         </div>
-        <div class="field"><label>Date</label><input type="date" id="m-date"></div>
+        <div class="field"><label>Date</label><input type="date" id="m-date" onchange="renderWorkforceBand()"></div>
         <div class="field">
           <label>Assignment method</label>
           <select id="m-method" onchange="renderAssignUI()">
@@ -295,6 +335,28 @@
           </select>
         </div>
       </div>
+
+      <!-- WORKFORCE ENGAGEMENT BAND -->
+      <div class="workforce-band" id="workforce-band">
+        <div class="wf-header">
+          <div class="wf-title">
+            <span>⚡ Workforce availability</span>
+            <span id="wf-context" style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:11px;"></span>
+          </div>
+          <div class="wf-legend">
+            <div class="wf-leg-item"><div class="wf-leg-dot" style="background:var(--amber)"></div>Engaged</div>
+            <div class="wf-leg-item"><div class="wf-leg-dot" style="background:var(--green)"></div>Free</div>
+          </div>
+        </div>
+        <div class="wf-bar-track"><div class="wf-bar-fill" id="wf-bar-fill" style="width:0%"></div></div>
+        <div class="wf-counts">
+          <span class="wf-count-engaged" id="wf-engaged-label">0 engaged</span>
+          <span id="wf-pct" style="font-size:11px;color:var(--text3)">0% coverage</span>
+          <span class="wf-count-free" id="wf-free-label">0 free</span>
+        </div>
+        <div class="role-breakdown" id="wf-role-breakdown"></div>
+      </div>
+
       <div id="assign-ui"></div>
       <div class="btn-row">
         <button class="btn solid" onclick="doAssign()">&#10003; Save assignment</button>
@@ -302,6 +364,7 @@
       </div>
       <div class="err-box" id="assign-err" style="margin-top:10px;"></div>
     </div>
+
     <div class="mpanel" id="mp-list">
       <div class="filter-row">
         <label>Filter by date:</label>
@@ -317,6 +380,7 @@
       </div>
       <div class="table-wrap" id="asgn-table-wrap"></div>
     </div>
+
     <div class="mpanel" id="mp-completed">
       <div class="filter-row">
         <label>Filter by date:</label>
@@ -432,7 +496,7 @@ let selTasks = new Set();
 let activeRole = '';
 let empCompleted = new Set();
 let currentEmpSession = null;
-let empRoleFilter = ''; // shared across employee + task panels in manual method
+let empRoleFilter = '';
 
 /* CSV PARSER */
 function parseCSV(text) {
@@ -454,9 +518,7 @@ function parseCSV(text) {
   return rows;
 }
 
-/* ═══════════════════════════════════════════
-   LOAD EMPLOYEES (with Role column)
-═══════════════════════════════════════════ */
+/* LOAD EMPLOYEES */
 async function loadEmployeesFromSheet() {
   const status = document.getElementById('data-status-emp');
   status.className = 'data-status loading';
@@ -506,9 +568,7 @@ async function loadEmployeesFromSheet() {
   }
 }
 
-/* ═══════════════════════════════════════════
-   LOAD TASKS (with Role column - can have multiple)
-═══════════════════════════════════════════ */
+/* LOAD TASKS */
 async function loadTasksFromSheet() {
   const status = document.getElementById('data-status-tasks');
   status.className = 'data-status loading';
@@ -535,7 +595,6 @@ async function loadTasksFromSheet() {
       const timeStr = colTime >= 0 ? (r[colTime] || '').toString().trim() : '0';
       const section = colSection >= 0 ? (r[colSection] || '').toString().trim() : '';
       if (!name) return null;
-      // Split on common separators - handles "Fitter, Helper" or "Fitter; Helper" or "Fitter / Helper"
       const roles = rolesStr ? rolesStr.split(/[,;/|]/).map(s => s.trim()).filter(Boolean) : ['General'];
       const time = parseInt(timeStr.replace(/[^0-9]/g, '')) || 0;
       let prio = 'M';
@@ -587,6 +646,7 @@ function reloadAll() {
   loadAllData().then(ok => {
     if (ok) showToast('Sheets refreshed successfully');
     else showToast('Some sheets failed to load');
+    renderWorkforceBand();
   });
 }
 
@@ -609,11 +669,6 @@ function saveCompletions() { localStorage.setItem('sms_completions', JSON.string
 function saveAssignments() { localStorage.setItem('sms_assignments', JSON.stringify(assignments)); }
 function escapeHtml(s) { return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ═══════════════════════════════════════════
-   ROLE-MATCHING HELPER
-   Returns true if a task's roles match the given employee role.
-   Handles: case-insensitive, partial match, multiple roles per task
-═══════════════════════════════════════════ */
 function taskMatchesRole(task, role) {
   if (!role) return true;
   const r = role.toLowerCase().trim();
@@ -630,6 +685,83 @@ document.getElementById('list-date-filter').value = today();
 document.getElementById('comp-date-filter').value = today();
 document.getElementById('mgr-date-label').textContent = new Date().toLocaleDateString('en-GB', {weekday:'long', day:'2-digit', month:'short', year:'numeric'});
 loadAllData();
+
+/* ═══════════════════════════════════════════
+   WORKFORCE ENGAGEMENT CALCULATION
+   Returns { engaged, free, total, byRole }
+   for a given date + shift combo.
+   If shift = '' → counts across all shifts for that date.
+═══════════════════════════════════════════ */
+function getEngagementData(date, shift) {
+  // Find unique enroll numbers assigned on this date (+ optional shift)
+  const engagedSet = new Set(
+    assignments
+      .filter(a => a.date === date && (!shift || a.shift === shift))
+      .map(a => a.enroll)
+  );
+  const total = EMPLOYEES.length;
+  const engaged = engagedSet.size;
+  const free = total - engaged;
+
+  // Per-role breakdown (uses employee roles, not task roles)
+  const byRole = {};
+  EMP_ROLE_LIST.forEach(role => {
+    const roleEmps = EMPLOYEES.filter(e => e.role === role);
+    const roleEngaged = roleEmps.filter(e => engagedSet.has(e.id)).length;
+    byRole[role] = { total: roleEmps.length, engaged: roleEngaged, free: roleEmps.length - roleEngaged };
+  });
+
+  return { engaged, free, total, engagedSet, byRole };
+}
+
+/* ── Render the workforce band above the assign UI ── */
+function renderWorkforceBand() {
+  const date = document.getElementById('m-date')?.value || today();
+  const shift = document.getElementById('m-shift')?.value || '';
+  const { engaged, free, total, byRole } = getEngagementData(date, shift);
+
+  const pct = total ? Math.round((engaged / total) * 100) : 0;
+  document.getElementById('wf-bar-fill').style.width = pct + '%';
+  document.getElementById('wf-engaged-label').textContent = `${engaged} engaged`;
+  document.getElementById('wf-free-label').textContent = `${free} free`;
+  document.getElementById('wf-pct').textContent = `${pct}% coverage`;
+  document.getElementById('wf-context').textContent =
+    `— Shift ${shift} · ${date}`;
+
+  // Role breakdown rows
+  const breakdown = document.getElementById('wf-role-breakdown');
+  if (EMP_ROLE_LIST.length === 0) { breakdown.innerHTML = ''; return; }
+  breakdown.innerHTML = EMP_ROLE_LIST.map(role => {
+    const d = byRole[role] || { total: 0, engaged: 0, free: 0 };
+    const rPct = d.total ? Math.round((d.engaged / d.total) * 100) : 0;
+    return `<div class="role-row">
+      <div class="role-row-name" title="${escapeHtml(role)}">${escapeHtml(role)}</div>
+      <div class="role-row-bar"><div class="role-row-fill" style="width:${rPct}%"></div></div>
+      <div class="role-row-nums">
+        <span style="color:var(--amber)">${d.engaged}</span>
+        <span style="color:var(--text3)"> / ${d.total}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════
+   STATS — now includes Engaged / Free
+═══════════════════════════════════════════ */
+function updateStats() {
+  const r = document.getElementById('st-roster'); if (r) r.textContent = EMPLOYEES.length;
+  const tk = document.getElementById('st-tasks'); if (tk) tk.textContent = TASKS.length;
+  const a = document.getElementById('st-asgn'); if (a) a.textContent = assignments.length;
+  const c = document.getElementById('st-completed'); if (c) c.textContent = completions.length;
+
+  // Engaged/Free: use today + all shifts for the top-level stat cards
+  const { engaged, free } = getEngagementData(today(), '');
+  const engEl = document.getElementById('st-engaged'); if (engEl) engEl.textContent = engaged;
+  const freeEl = document.getElementById('st-free'); if (freeEl) freeEl.textContent = free;
+
+  // Also refresh the workforce band if assign tab is visible
+  renderWorkforceBand();
+}
 
 /* ═══════════════════════════════════════════
    MANAGER
@@ -659,6 +791,7 @@ function mgrTab(name) {
   document.getElementById('mp-' + name).classList.add('active');
   if (name === 'list') renderAssignTable();
   if (name === 'completed') renderCompletedTable();
+  if (name === 'assign') renderWorkforceBand();
 }
 
 function renderAssignUI() {
@@ -690,7 +823,6 @@ function renderAssignUI() {
         <div class="scroll-box" id="task-sel-list"></div>
       </div>
     </div>`;
-    // Restore previous filter selection
     if (empRoleFilter) {
       document.getElementById('emp-role-filter').value = empRoleFilter;
     }
@@ -723,12 +855,9 @@ function renderAssignUI() {
       </div>
     </div>`;
   }
+  renderWorkforceBand();
 }
 
-/* ═══════════════════════════════════════════
-   NEW: setRoleFilter — single source of truth
-   Filters BOTH employee panel AND task panel
-═══════════════════════════════════════════ */
 function setRoleFilter(role) {
   empRoleFilter = role || '';
   renderEmpList(document.getElementById('emp-search')?.value || '');
@@ -763,12 +892,14 @@ function updateTaskPanelHeader() {
   }
 }
 
-/* ═══════════════════════════════════════════
-   RENDER EMPLOYEE LIST — filters by empRoleFilter
-═══════════════════════════════════════════ */
+/* ── Render employee list — now shows engaged/free dot ── */
 function renderEmpList(q) {
   const el = document.getElementById('emp-sel-list'); if (!el) return;
   const ql = (q || '').toLowerCase();
+  const date = document.getElementById('m-date')?.value || today();
+  const shift = document.getElementById('m-shift')?.value || '';
+  const { engagedSet } = getEngagementData(date, shift);
+
   const f = EMPLOYEES.filter(e => {
     if (empRoleFilter && e.role !== empRoleFilter) return false;
     if (!q) return true;
@@ -777,29 +908,28 @@ function renderEmpList(q) {
       || (e.section || '').toLowerCase().includes(ql)
       || (e.role || '').toLowerCase().includes(ql);
   });
-  el.innerHTML = f.slice(0, 100).map(e => `
-    <div class="emp-item${selEmps.has(e.id) ? ' sel' : ''}" onclick="toggleEmp(${e.id})">
+  el.innerHTML = f.slice(0, 100).map(e => {
+    const isEngaged = engagedSet.has(e.id);
+    return `<div class="emp-item${selEmps.has(e.id) ? ' sel' : ''}" onclick="toggleEmp(${e.id})">
       <div class="avatar">${initials(e.name)}</div>
       <div style="flex:1;min-width:0">
-        <div class="emp-name">${escapeHtml(e.name)}${e.role ? ` <span class="emp-role-badge">${escapeHtml(e.role)}</span>` : ''}</div>
+        <div class="emp-name">${escapeHtml(e.name)}${e.role ? ` <span class="emp-role-badge">${escapeHtml(e.role)}</span>` : ''}
+          <span class="${isEngaged ? 'b-engaged' : 'b-free'}" style="margin-left:4px">${isEngaged ? '⚡ Engaged' : '✓ Free'}</span>
+        </div>
         <div class="emp-id">${e.id}${e.section ? ' · ' + escapeHtml(e.section) : ''}</div>
       </div>
-    </div>`).join('') || '<div style="font-size:12px;color:var(--text3);padding:8px;text-align:center;">No matches</div>';
+      <div class="eng-dot ${isEngaged ? 'engaged' : 'free'}" title="${isEngaged ? 'Already assigned this shift' : 'Not yet assigned'}"></div>
+    </div>`;
+  }).join('') || '<div style="font-size:12px;color:var(--text3);padding:8px;text-align:center;">No matches</div>';
 }
 
-/* ═══════════════════════════════════════════
-   RENDER TASK LIST — NOW also filters by empRoleFilter
-   Highlights the matching role within the task's role list
-═══════════════════════════════════════════ */
 function renderTaskList(q) {
   const el = document.getElementById('task-sel-list'); if (!el) return;
   const ql = (q || '').toLowerCase();
   const rf = (empRoleFilter || '').toLowerCase().trim();
 
   const f = TASKS.filter(t => {
-    // Apply role filter (linked from employee panel)
     if (empRoleFilter && !taskMatchesRole(t, empRoleFilter)) return false;
-    // Apply search query
     if (!q) return true;
     return t.name.toLowerCase().includes(ql)
         || t.roles.some(r => r.toLowerCase().includes(ql))
@@ -816,7 +946,6 @@ function renderTaskList(q) {
   el.innerHTML = f.map(t => {
     const pc = t.prio === 'H' ? 'b-h' : t.prio === 'M' ? 'b-m' : 'b-l';
     const pl = t.prio === 'H' ? 'High' : t.prio === 'M' ? 'Med' : 'Low';
-    // Build roles display, highlighting the matched one
     const rolesDisplay = t.roles.map(r => {
       if (rf && (r.toLowerCase().includes(rf) || rf.includes(r.toLowerCase()))) {
         return `<span class="matched-role">${escapeHtml(r)}</span>`;
@@ -836,24 +965,29 @@ function renderTaskList(q) {
   }).join('');
 }
 
-/* ═══════════════════════════════════════════
-   ROLE GROUP method (separate panel) - matches both sheets
-═══════════════════════════════════════════ */
 function roleGroupChange(role) {
   activeRole = role;
   const empEl = document.getElementById('role-emp-list');
   const titleEl = document.getElementById('role-task-title');
+  const date = document.getElementById('m-date')?.value || today();
+  const shift = document.getElementById('m-shift')?.value || '';
+  const { engagedSet } = getEngagementData(date, shift);
   const safeRole = role.replace(/'/g,"\\'").replace(/"/g,'\\"');
   if (empEl) {
     const filteredEmps = EMPLOYEES.filter(e => e.role === role);
-    empEl.innerHTML = filteredEmps.length ? filteredEmps.map(e => `
-      <div class="emp-item${selEmps.has(e.id) ? ' sel' : ''}" onclick="toggleEmp(${e.id});roleGroupChange('${safeRole}')">
+    empEl.innerHTML = filteredEmps.length ? filteredEmps.map(e => {
+      const isEngaged = engagedSet.has(e.id);
+      return `<div class="emp-item${selEmps.has(e.id) ? ' sel' : ''}" onclick="toggleEmp(${e.id});roleGroupChange('${safeRole}')">
         <div class="avatar">${initials(e.name)}</div>
         <div style="flex:1;min-width:0">
-          <div class="emp-name">${escapeHtml(e.name)}</div>
+          <div class="emp-name">${escapeHtml(e.name)}
+            <span class="${isEngaged ? 'b-engaged' : 'b-free'}" style="margin-left:4px">${isEngaged ? '⚡ Engaged' : '✓ Free'}</span>
+          </div>
           <div class="emp-id">${e.id}${e.section ? ' · ' + escapeHtml(e.section) : ''}</div>
         </div>
-      </div>`).join('') : '<div style="font-size:12px;color:var(--text3);padding:8px;">No employees with this role</div>';
+        <div class="eng-dot ${isEngaged ? 'engaged' : 'free'}"></div>
+      </div>`;
+    }).join('') : '<div style="font-size:12px;color:var(--text3);padding:8px;">No employees with this role</div>';
   }
   if (titleEl) {
     const matchCount = TASKS.filter(t => taskMatchesRole(t, role)).length;
@@ -940,19 +1074,12 @@ function doAssign() {
     showToast(`${count} assignment${count !== 1 ? 's' : ''} saved`);
   }
   saveAssignments();
-  updateStats();
+  updateStats();          // ← also re-renders workforce band
   selEmps.clear(); selTasks.clear();
-  renderAssignUI();
+  renderAssignUI();       // ← also calls renderWorkforceBand()
 }
 
 function clearSelections() { selEmps.clear(); selTasks.clear(); renderAssignUI(); }
-
-function updateStats() {
-  const r = document.getElementById('st-roster'); if (r) r.textContent = EMPLOYEES.length;
-  const tk = document.getElementById('st-tasks'); if (tk) tk.textContent = TASKS.length;
-  const a = document.getElementById('st-asgn'); if (a) a.textContent = assignments.length;
-  const c = document.getElementById('st-completed'); if (c) c.textContent = completions.length;
-}
 
 function renderAssignTable() {
   const wrap = document.getElementById('asgn-table-wrap');
@@ -1254,3 +1381,5 @@ document.getElementById('congrats-modal').addEventListener('click', (e) => {
 </script>
 </body>
 </html>
+
+
