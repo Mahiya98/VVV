@@ -54,10 +54,7 @@
     background: var(--bg);
   }
   .home-inner { max-width: 480px; width: 100%; }
-  .home-logo {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 2.5rem;
-  }
+  .home-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 2.5rem; }
   .logo-mark {
     width: 44px; height: 44px; border-radius: 10px;
     background: var(--blue); display: flex; align-items: center;
@@ -138,6 +135,8 @@
   .btn.solid { background: var(--blue); color: #fff; border-color: var(--blue); }
   .btn.solid:hover { background: #143f7a; border-color: #143f7a; }
   .btn.full { width: 100%; padding: 10px; justify-content: center; }
+  .btn.green { background: var(--green); color: #fff; border-color: var(--green); }
+  .btn.green:hover { background: #15613a; border-color: #15613a; }
   .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 
   .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
@@ -211,14 +210,12 @@
   .task-name-s { font-size: 12px; line-height: 1.4; }
   .task-meta-s { font-size: 11px; color: var(--text2); margin-top: 2px; }
 
-  .badge {
-    display: inline-block; font-size: 10px; font-weight: 500;
-    padding: 2px 7px; border-radius: 99px;
-  }
+  .badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 99px; }
   .b-h { background: var(--red-light); color: var(--red); }
   .b-m { background: var(--amber-light); color: var(--amber); }
   .b-l { background: var(--green-light); color: var(--green); }
   .b-shift { background: var(--blue-light); color: var(--blue); }
+  .b-done { background: var(--green-light); color: var(--green); }
   .tag { font-size: 10px; padding: 1px 7px; border-radius: 99px; background:var(--surface2); color: var(--text2); display: inline-block; margin: 1px; }
 
   .table-wrap { overflow-x: auto; }
@@ -280,6 +277,110 @@
     background: var(--surface2); color: var(--text2); border: 1px solid var(--border);
   }
   .done-label { font-size: 11px; color: var(--green); margin-top: 5px; font-weight: 500; }
+
+  /* ════════ NEW: SAVE BUTTON SECTION ════════ */
+  .save-section {
+    margin-top: 20px; padding: 18px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); text-align: center;
+    transition: all .25s;
+  }
+  .save-section.locked {
+    background: var(--surface2); border-style: dashed;
+  }
+  .save-section.ready {
+    background: linear-gradient(135deg, #e6f5ed 0%, #d0ecdb 100%);
+    border-color: var(--green);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(31,122,74,.4); }
+    50% { box-shadow: 0 0 0 8px rgba(31,122,74,0); }
+  }
+  .save-section.submitted {
+    background: var(--green-light); border-color: var(--green); border-style: solid;
+  }
+  .save-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+  .save-sub { font-size: 12px; color: var(--text2); margin-bottom: 12px; }
+  .save-btn-big {
+    padding: 12px 28px; font-size: 14px; font-weight: 600;
+    border-radius: var(--radius-sm); cursor: pointer;
+    border: none; font-family: var(--font);
+    transition: all .2s;
+  }
+  .save-btn-big.active {
+    background: var(--green); color: #fff;
+    box-shadow: 0 4px 12px rgba(31,122,74,.3);
+  }
+  .save-btn-big.active:hover { background: #15613a; transform: translateY(-1px); }
+  .save-btn-big.disabled {
+    background: var(--surface); color: var(--text3);
+    border: 1px solid var(--border); cursor: not-allowed;
+  }
+  .save-btn-big.done-state {
+    background: #fff; color: var(--green); border: 1px solid var(--green); cursor: default;
+  }
+
+  /* ════════ NEW: CONGRATS MODAL ════════ */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.55);
+    display: none; align-items: center; justify-content: center;
+    z-index: 9000; padding: 20px;
+    animation: fadeIn .25s ease;
+  }
+  .modal-backdrop.show { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal-card {
+    background: #fff; border-radius: 16px; max-width: 460px; width: 100%;
+    overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    animation: popIn .35s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn {
+    from { transform: scale(.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .modal-banner {
+    background: linear-gradient(135deg, var(--green) 0%, #2d9a5e 100%);
+    padding: 30px 24px 24px; text-align: center; color: #fff;
+    position: relative; overflow: hidden;
+  }
+  .modal-banner::before, .modal-banner::after {
+    content: '🎉'; position: absolute; font-size: 50px; opacity: .25;
+  }
+  .modal-banner::before { top: 8px; left: 12px; transform: rotate(-15deg); }
+  .modal-banner::after { bottom: 8px; right: 12px; transform: rotate(20deg); }
+  .modal-trophy {
+    font-size: 56px; margin-bottom: 8px;
+    animation: bounce 1.2s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .modal-title { font-size: 26px; font-weight: 600; margin-bottom: 6px; }
+  .modal-sub { font-size: 13px; opacity: .9; }
+  .modal-body { padding: 24px; }
+  .modal-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .modal-row:last-of-type { border-bottom: none; }
+  .modal-row .lbl { color: var(--text2); }
+  .modal-row .val { font-weight: 500; color: var(--text); text-align: right; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 18px; }
+  .modal-actions .btn { flex: 1; padding: 11px; justify-content: center; }
+
+  /* ════════ NEW: CONFETTI ════════ */
+  .confetti-piece {
+    position: fixed; top: -10px; width: 8px; height: 14px;
+    z-index: 9500; pointer-events: none;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
 
   .toast {
     position: fixed; bottom: 20px; right: 20px;
@@ -368,12 +469,13 @@
     <div class="stats-row">
       <div class="stat-card"><div class="stat-label">Assignments</div><div class="stat-val" id="st-asgn">0</div><div class="stat-sub">total records</div></div>
       <div class="stat-card"><div class="stat-label">Employees</div><div class="stat-val" id="st-emp">0</div><div class="stat-sub">assigned today</div></div>
-      <div class="stat-card"><div class="stat-label">Tasks used</div><div class="stat-val" id="st-tasks">0</div><div class="stat-sub">unique tasks</div></div>
+      <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-val" id="st-completed">0</div><div class="stat-sub">submissions</div></div>
     </div>
 
     <div class="tabs">
       <button class="tab active" onclick="mgrTab('assign')">Assign tasks</button>
       <button class="tab" onclick="mgrTab('list')">Assignment list</button>
+      <button class="tab" onclick="mgrTab('completed')">Completed ✓</button>
     </div>
 
     <div class="mpanel active" id="mp-assign">
@@ -424,6 +526,17 @@
       </div>
       <div class="table-wrap" id="asgn-table-wrap"></div>
     </div>
+
+    <!-- NEW: COMPLETED PANEL -->
+    <div class="mpanel" id="mp-completed">
+      <div class="filter-row">
+        <label>Filter by date:</label>
+        <input type="date" id="comp-date-filter" oninput="renderCompletedTable()">
+        <button class="btn" onclick="document.getElementById('comp-date-filter').value='';renderCompletedTable()">Clear filter</button>
+        <button class="btn" onclick="exportCompletionsCSV()" style="margin-left:auto;">📥 Export CSV</button>
+      </div>
+      <div class="table-wrap" id="comp-table-wrap"></div>
+    </div>
   </div>
 </div>
 
@@ -471,6 +584,37 @@
       </div>
     </div>
     <div id="et-task-list"></div>
+
+    <!-- NEW: SAVE SECTION -->
+    <div class="save-section locked" id="save-section">
+      <div class="save-title" id="save-title">Complete all tasks to enable submission</div>
+      <div class="save-sub" id="save-sub">Tick every task above, then the Save button will activate</div>
+      <button class="save-btn-big disabled" id="save-btn" onclick="submitCompletion()" disabled>
+        🔒 Save & Submit
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW: CONGRATS MODAL -->
+<div class="modal-backdrop" id="congrats-modal">
+  <div class="modal-card">
+    <div class="modal-banner">
+      <div class="modal-trophy">🏆</div>
+      <div class="modal-title">Congratulations!</div>
+      <div class="modal-sub" id="cm-sub">You completed all your tasks today</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-row"><span class="lbl">Employee</span><span class="val" id="cm-name">—</span></div>
+      <div class="modal-row"><span class="lbl">Enroll</span><span class="val" id="cm-enroll">—</span></div>
+      <div class="modal-row"><span class="lbl">Date · Shift</span><span class="val" id="cm-shift">—</span></div>
+      <div class="modal-row"><span class="lbl">Tasks completed</span><span class="val" id="cm-tasks">—</span></div>
+      <div class="modal-row"><span class="lbl">Submitted at</span><span class="val" id="cm-time">—</span></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="downloadReport()">📥 Download report</button>
+        <button class="btn solid" onclick="closeCongrats()">Done</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -528,6 +672,10 @@ let selTasks = new Set();
 let activeRole = ROLE_LIST[0];
 let empCompleted = new Set();
 
+/* NEW: completion records (persisted to localStorage) */
+let completions = JSON.parse(localStorage.getItem('sms_completions') || '[]');
+let currentEmpSession = null; // holds the current employee's session info
+
 /* ═══════════════════════════════════════════
    HELPERS
 ═══════════════════════════════════════════ */
@@ -545,6 +693,7 @@ function showToast(msg) {
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
 }
+function saveCompletions() { localStorage.setItem('sms_completions', JSON.stringify(completions)); }
 
 /* ═══════════════════════════════════════════
    INIT
@@ -552,6 +701,7 @@ function showToast(msg) {
 document.getElementById('m-date').value = today();
 document.getElementById('emp-date').value = today();
 document.getElementById('list-date-filter').value = today();
+document.getElementById('comp-date-filter').value = today();
 document.getElementById('mgr-date-label').textContent = new Date().toLocaleDateString('en-GB', {weekday:'long', day:'2-digit', month:'short', year:'numeric'});
 
 /* ═══════════════════════════════════════════
@@ -589,10 +739,12 @@ function managerLogin() {
 }
 
 function mgrTab(name) {
-  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ['assign','list'][i] === name));
+  const tabs = ['assign','list','completed'];
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', tabs[i] === name));
   document.querySelectorAll('.mpanel').forEach(p => p.classList.remove('active'));
   document.getElementById('mp-' + name).classList.add('active');
   if (name === 'list') renderAssignTable();
+  if (name === 'completed') renderCompletedTable();
 }
 
 function renderAssignUI() {
@@ -742,7 +894,7 @@ function clearSelections() { selEmps.clear(); selTasks.clear(); renderAssignUI()
 function updateStats() {
   document.getElementById('st-asgn').textContent = assignments.length;
   document.getElementById('st-emp').textContent = new Set(assignments.map(a => a.enroll)).size;
-  document.getElementById('st-tasks').textContent = new Set(assignments.map(a => a.taskId)).size;
+  document.getElementById('st-completed').textContent = completions.length;
 }
 
 function renderAssignTable() {
@@ -769,16 +921,19 @@ function renderAssignTable() {
 
   let html = `<table>
     <thead><tr>
-      <th style="width:28%">Employee</th>
+      <th style="width:26%">Employee</th>
       <th style="width:10%">Date</th>
       <th style="width:10%">Shift</th>
       <th>Assigned tasks</th>
+      <th style="width:90px">Status</th>
       <th style="width:70px"></th>
     </tr></thead><tbody>`;
 
   Object.values(byKey).forEach(row => {
     const emp = empMap[row.enroll] || {name: 'Unknown', id: row.enroll};
     const taskTags = row.tasks.map(tid => taskMap[tid] ? `<span class="tag">${taskMap[tid].name}</span>` : '').join('');
+    const isCompleted = completions.find(c => c.enroll === row.enroll && c.date === row.date && c.shift === row.shift);
+    const statusBadge = isCompleted ? '<span class="badge b-done">✓ Done</span>' : '<span class="badge b-m">Pending</span>';
     html += `<tr>
       <td>
         <div style="display:flex;align-items:center;gap:8px">
@@ -787,7 +942,9 @@ function renderAssignTable() {
         </div>
       </td>
       <td style="font-size:12px">${row.date}</td>
-      <td><span class="badge b-shift">Shift ${row.shift}</span></td><td>${taskTags}</td>
+      <td><span class="badge b-shift">Shift ${row.shift}</span></td>
+      <td>${taskTags}</td>
+      <td>${statusBadge}</td>
       <td><button class="del-btn" onclick='deleteGroup(${JSON.stringify(row.idxs)})'>Remove</button></td>
     </tr>`;
   });
@@ -801,6 +958,76 @@ function deleteGroup(idxs) {
   updateStats();
   renderAssignTable();
   showToast('Assignment removed');
+}
+
+/* ═══════════════════════════════════════════
+   NEW: COMPLETED TABLE (Manager)
+═══════════════════════════════════════════ */
+function renderCompletedTable() {
+  const wrap = document.getElementById('comp-table-wrap');
+  const dateF = document.getElementById('comp-date-filter').value;
+  const filtered = completions.filter(c => !dateF || c.date === dateF);
+
+  if (!filtered.length) {
+    wrap.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div>No completed submissions yet for the selected date.</div>';
+    return;
+  }
+
+  let html = `<table>
+    <thead><tr>
+      <th>Employee</th>
+      <th style="width:10%">Date</th>
+      <th style="width:10%">Shift</th>
+      <th style="width:10%">Tasks</th>
+      <th style="width:18%">Submitted at</th>
+      <th style="width:90px"></th>
+    </tr></thead><tbody>`;
+
+  filtered.slice().reverse().forEach((c, idx) => {
+    const realIdx = completions.length - 1 - idx;
+    html += `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="avatar" style="width:26px;height:26px;font-size:10px">${initials(c.name)}</div>
+          <div><div style="font-size:13px;font-weight:500">${c.name}</div><div style="font-size:11px;color:var(--text2);font-family:var(--mono)">${c.enroll}</div></div>
+        </div>
+      </td>
+      <td style="font-size:12px">${c.date}</td>
+      <td><span class="badge b-shift">Shift ${c.shift}</span></td>
+      <td><span class="badge b-done">${c.taskCount} ✓</span></td>
+      <td style="font-size:12px;font-family:var(--mono)">${c.submittedAt}</td>
+      <td><button class="del-btn" onclick="removeCompletion(${realIdx})">Remove</button></td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function removeCompletion(idx) {
+  if (!confirm('Remove this completion record?')) return;
+  completions.splice(idx, 1);
+  saveCompletions();
+  updateStats();
+  renderCompletedTable();
+  showToast('Completion record removed');
+}
+
+function exportCompletionsCSV() {
+  if (!completions.length) { showToast('No completions to export'); return; }
+  const headers = ['Enroll','Name','Date','Shift','Tasks Completed','Task Names','Submitted At'];
+  const rows = completions.map(c => [
+    c.enroll, `"${c.name}"`, c.date, c.shift, c.taskCount,
+    `"${c.taskNames.join('; ')}"`, c.submittedAt
+  ].join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `completions_${today()}.csv`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  showToast('CSV exported');
 }
 
 /* ═══════════════════════════════════════════
@@ -828,6 +1055,7 @@ function empLogin() {
 function showEmpTasks(emp, myAssign, date) {
   const shiftInfo = myAssign[0] ? SHIFT_TIMES[myAssign[0].shift] : {s:'--', e:'--'};
   const shiftLabel = myAssign[0] ? `Shift ${myAssign[0].shift} · ${shiftInfo.s} – ${shiftInfo.e}` : '';
+  const shiftCode = myAssign[0] ? myAssign[0].shift : '';
 
   document.getElementById('et-name').textContent = emp.name;
   document.getElementById('et-meta').textContent = `${date} · ${shiftLabel}`;
@@ -838,6 +1066,18 @@ function showEmpTasks(emp, myAssign, date) {
     .map(a => taskMap[a.taskId])
     .filter(Boolean)
     .sort((a, b) => ({ H:0, M:1, L:2 })[a.prio] - ({ H:0, M:1, L:2 })[b.prio]);
+
+  /* NEW: store session for use by submit */
+  currentEmpSession = {
+    emp, date, shift: shiftCode, shiftLabel,
+    tasks: tasksSorted
+  };
+
+  /* NEW: check if already submitted */
+  const already = completions.find(c => c.enroll === emp.id && c.date === date && c.shift === shiftCode);
+  if (already) {
+    empCompleted = new Set(tasksSorted.map(t => t.id)); // mark all done visually
+  }
 
   function renderEmpTasks() {
     const done = empCompleted.size;
@@ -872,6 +1112,9 @@ function showEmpTasks(emp, myAssign, date) {
         </div>
       </div>`;
     }).join('');
+
+    /* NEW: update save button state */
+    updateSaveButton(done, total);
   }
 
   window._empRender = renderEmpTasks;
@@ -880,9 +1123,180 @@ function showEmpTasks(emp, myAssign, date) {
 }
 
 function toggleEmpDone(id) {
+  /* Don't allow toggling if already submitted */
+  const s = currentEmpSession;
+  if (s && completions.find(c => c.enroll === s.emp.id && c.date === s.date && c.shift === s.shift)) {
+    showToast('Already submitted — tasks are locked');
+    return;
+  }
   if (empCompleted.has(id)) empCompleted.delete(id); else empCompleted.add(id);
   if (window._empRender) window._empRender();
 }
+
+/* ═══════════════════════════════════════════
+   NEW: SAVE BUTTON + CONGRATS
+═══════════════════════════════════════════ */
+function updateSaveButton(done, total) {
+  const section = document.getElementById('save-section');
+  const btn = document.getElementById('save-btn');
+  const title = document.getElementById('save-title');
+  const sub = document.getElementById('save-sub');
+
+  const s = currentEmpSession;
+  const alreadySubmitted = s && completions.find(c =>
+    c.enroll === s.emp.id && c.date === s.date && c.shift === s.shift
+  );
+
+  if (alreadySubmitted) {
+    section.className = 'save-section submitted';
+    title.innerHTML = '✅ Already submitted';
+    sub.textContent = `Submitted on ${alreadySubmitted.submittedAt} — tasks are locked`;
+    btn.className = 'save-btn-big done-state';
+    btn.innerHTML = '✓ Already submitted';
+    btn.disabled = true;
+    return;
+  }
+
+  if (done < total) {
+    section.className = 'save-section locked';
+    title.textContent = `Complete all tasks to enable submission (${done}/${total} done)`;
+    sub.textContent = 'Tick every task above, then the Save button will activate';
+    btn.className = 'save-btn-big disabled';
+    btn.innerHTML = '🔒 Save & Submit';
+    btn.disabled = true;
+  } else {
+    section.className = 'save-section ready';
+    title.textContent = '🎉 All tasks completed!';
+    sub.textContent = 'Click below to save your work and notify your manager';
+    btn.className = 'save-btn-big active';
+    btn.innerHTML = '✅ Save & Submit';
+    btn.disabled = false;
+  }
+}
+
+function submitCompletion() {
+  const s = currentEmpSession;
+  if (!s) return;
+
+  /* Double-check: must be 100% done */
+  if (empCompleted.size !== s.tasks.length) {
+    showToast('Please complete all tasks first');
+    return;
+  }
+
+  /* Prevent duplicate */
+  if (completions.find(c => c.enroll === s.emp.id && c.date === s.date && c.shift === s.shift)) {
+    showToast('Already submitted for this shift');
+    return;
+  }
+
+  const now = new Date();
+  const submittedAt = now.toLocaleString('en-GB', {
+    day:'2-digit', month:'short', year:'numeric',
+    hour:'2-digit', minute:'2-digit'
+  });
+
+  const record = {
+    enroll: s.emp.id,
+    name: s.emp.name,
+    date: s.date,
+    shift: s.shift,
+    shiftLabel: s.shiftLabel,
+    taskCount: s.tasks.length,
+    taskIds: s.tasks.map(t => t.id),
+    taskNames: s.tasks.map(t => t.name),
+    submittedAt: submittedAt,
+    submittedTimestamp: now.getTime()
+  };
+
+  completions.push(record);
+  saveCompletions();
+  updateStats();
+
+  /* Show congrats */
+  showCongrats(record);
+
+  /* Refresh UI to lock it */
+  if (window._empRender) window._empRender();
+}
+
+function showCongrats(record) {
+  document.getElementById('cm-name').textContent = record.name;
+  document.getElementById('cm-enroll').textContent = record.enroll;
+  document.getElementById('cm-shift').textContent = `${record.date} · ${record.shiftLabel}`;
+  document.getElementById('cm-tasks').textContent = `${record.taskCount} task${record.taskCount !== 1 ? 's' : ''}`;
+  document.getElementById('cm-time').textContent = record.submittedAt;
+  document.getElementById('cm-sub').textContent = `Excellent work, ${record.name.split(' ')[0]}! 🎊`;
+
+  document.getElementById('congrats-modal').classList.add('show');
+  fireConfetti();
+}
+
+function closeCongrats() {
+  document.getElementById('congrats-modal').classList.remove('show');
+}
+
+function fireConfetti() {
+  const colors = ['#1f7a4a','#1a56a0','#8a5a00','#9b2c2c','#3b7dd8','#2d9a5e'];
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+    piece.style.animationDelay = (Math.random() * 0.4) + 's';
+    piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 4500);
+  }
+}
+
+function downloadReport() {
+  const s = currentEmpSession;
+  if (!s) return;
+  const record = completions.find(c => c.enroll === s.emp.id && c.date === s.date && c.shift === s.shift);
+  if (!record) return;
+
+  const text =
+`══════════════════════════════════════════
+   AKIJ ISPAT — SMS PRODUCTION
+   Task Completion Report
+══════════════════════════════════════════
+
+Employee Name : ${record.name}
+Enroll Number : ${record.enroll}
+Date          : ${record.date}
+Shift         : ${record.shiftLabel}
+Submitted At  : ${record.submittedAt}
+
+──────────────────────────────────────────
+COMPLETED TASKS (${record.taskCount})
+──────────────────────────────────────────
+${record.taskNames.map((n, i) => `  ${(i+1).toString().padStart(2,'0')}. ✓ ${n}`).join('\n')}
+
+──────────────────────────────────────────
+STATUS: ✅ ALL TASKS COMPLETED
+──────────────────────────────────────────
+
+Generated by SMS Production Schedule System
+`;
+
+  const blob = new Blob([text], { type: 'text/plain' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `completion_${record.enroll}_${record.date}_shift${record.shift}.txt`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  showToast('Report downloaded');
+}
+
+/* Close modal on backdrop click */
+document.getElementById('congrats-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'congrats-modal') closeCongrats();
+});
+
+/* Init stats with completions */
+updateStats();
 </script>
 </body>
 </html>
